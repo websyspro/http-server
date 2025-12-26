@@ -3,6 +3,8 @@
 namespace Websyspro;
 
 use Exception;
+use Websyspro\Logger\Enums\LogType;
+use Websyspro\Logger\Log;
 
 class HttpServer
 {
@@ -64,6 +66,11 @@ class HttpServer
   
   private function startLoop(
   ): never {
+    Log::message(
+      LogType::service, 
+      "Server started on port {$this->port}"
+    );
+
     while(true){
       try {
         new ClientAccept(

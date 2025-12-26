@@ -7,7 +7,7 @@ class ClientAccept
   private ClientAcceptHeader $clientAcceptHeader;
 
   public function __construct(
-    private HttpServer $HttpServer,
+    private HttpServer $httpServer,
     private mixed $streamSocketAccept 
   ){
     $this->ready();
@@ -29,11 +29,11 @@ class ClientAccept
   public function ready(
   ): void {
     if ($this->streamSocketAccept) {
-      if ($this->HttpServer->isConnectionExceded()) {
+      if ($this->httpServer->isConnectionExceded()) {
         // TD para retorno de error Service Unavailable
         echo "Connection exceded\n";
       } else {
-        $this->HttpServer->incrementConnection();
+        $this->httpServer->incrementConnection();
         $this->readyRequest();
 
         $json = json_encode([
@@ -52,7 +52,7 @@ class ClientAccept
 
         fwrite($this->streamSocketAccept, $response);
         $this->closeRequest();
-        $this->HttpServer->decrementConnection();
+        $this->httpServer->decrementConnection();
       }
     }
   }
