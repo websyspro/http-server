@@ -1,0 +1,143 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "030cdf5172c44ea0768450f19f4b875d",
+    "packages": [],
+    "packages-dev": [
+        {
+            "name": "websyspro/common",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/websyspro/common.git",
+                "reference": "a18e9664518d6bf02215b331ef328886ee8b9c82"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/websyspro/common/zipball/a18e9664518d6bf02215b331ef328886ee8b9c82",
+                "reference": "a18e9664518d6bf02215b331ef328886ee8b9c82",
+                "shasum": ""
+            },
+            "require-dev": {
+                "websyspro/entity": "dev-main"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Methods.php"
+                ],
+                "psr-4": {
+                    "Websyspro\\Commons\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "websyspro",
+                    "email": "websyspro.services@gmail.com"
+                }
+            ],
+            "description": "Set of PHP features for use in Libraries",
+            "support": {
+                "issues": "https://github.com/websyspro/common/issues",
+                "source": "https://github.com/websyspro/common/tree/main"
+            },
+            "time": "2025-10-14T01:28:35+00:00"
+        },
+        {
+            "name": "websyspro/logger",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/websyspro/logger.git",
+                "reference": "df2f15af1992ab7287fd01968c75accec3863f56"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/websyspro/logger/zipball/df2f15af1992ab7287fd01968c75accec3863f56",
+                "reference": "df2f15af1992ab7287fd01968c75accec3863f56",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Websyspro\\Logger\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "websyspro",
+                    "email": "websyspro.services@gmail.com"
+                }
+            ],
+            "description": "Library for logs in server api",
+            "support": {
+                "issues": "https://github.com/websyspro/logger/issues",
+                "source": "https://github.com/websyspro/logger/tree/main"
+            },
+            "time": "2025-08-07T21:40:59+00:00"
+        },
+        {
+            "name": "websyspro/watch",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/websyspro/watch.git",
+                "reference": "b8b3eb1d92c283e42a78f5422f206d027ca7be2a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/websyspro/watch/zipball/b8b3eb1d92c283e42a78f5422f206d027ca7be2a",
+                "reference": "b8b3eb1d92c283e42a78f5422f206d027ca7be2a",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Websyspro\\Watch\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "websyspro",
+                    "email": "websyspro.services@gmail.com"
+                }
+            ],
+            "description": "File watcher for PHP projects using PowerShell",
+            "support": {
+                "issues": "https://github.com/websyspro/watch/issues",
+                "source": "https://github.com/websyspro/watch/tree/main"
+            },
+            "time": "2025-05-18T13:55:42+00:00"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "websyspro/common": 20,
+        "websyspro/logger": 20,
+        "websyspro/watch": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
+}

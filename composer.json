@@ -1,0 +1,25 @@
+{
+  "name": "websyspro/http-server",
+  "description": "Library for developing REST API applications.",
+  "license": "MIT",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Websyspro\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "websyspro",
+      "email": "cpd.emersontsa@gmail.com"
+    }
+  ],
+  "require-dev": {
+    "websyspro/logger": "dev-main",
+    "websyspro/common": "dev-main",
+    "websyspro/watch": "dev-main"
+  },
+  "scripts": {
+    "update-git": "git add . && git commit -m \"Update components\" && git push origin HEAD"
+  }
+}
