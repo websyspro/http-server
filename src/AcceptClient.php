@@ -42,10 +42,11 @@ class AcceptClient
   ): void {
     Log::message(
       LogType::service, 
-      sprintf("[%s] %s - %s?%s",  ...[
+      sprintf("[%s] %s - %s%s%s",  ...[
         $this->acceptHeader->protocolVersion(),
         $this->acceptHeader->requestMethod(),
         $this->acceptHeader->requestUrl(),
+        $this->acceptHeader->requestUrlSeparator(),
         $this->acceptHeader->requestUrlQuery(),
       ]),
       $this->detailClient->getIp(),

@@ -141,6 +141,11 @@ class AcceptHeader
     return $requestUrl;
   }
 
+  public function requestUrlSeparator(
+  ): string|null {
+    return $this->isQueryInUrl() ? "?" : "";
+  }  
+
   public function contentType(
   ): string|null {
     return $this->propertys["ContentType"] ?? null;
