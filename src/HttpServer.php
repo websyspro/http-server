@@ -35,7 +35,7 @@ class HttpServer
   ): void {
     @stream_set_blocking(
       $this->streamSocket,
-      true
+      false
     );
   }
 
@@ -74,6 +74,11 @@ class HttpServer
   ): void {
     $this->socketConnections--;
   } 
+
+  public function startUsLeep(
+  ): void {
+    usleep(1000);
+  }
   
   private function startLoop(
   ) {
@@ -88,6 +93,8 @@ class HttpServer
           $this->httpServer(), 
           $this->streamSocketAccept()
         );
+
+        $this->startUsLeep();
       } catch (Exception $error) {
         throw new Exception(
           $error
