@@ -18,45 +18,45 @@ class Request
 
   private function isApplicationJson(
   ): bool {
-    if($this->acceptHeader->contentType() === null){
+    if($this->acceptHeader->getContentType() === null){
       return false;
     }
 
     return preg_match(
       "#^application/json#", 
-      $this->acceptHeader->contentType()
+      $this->acceptHeader->getContentType()
     ) === 1;
   }
 
   private function isMultipartFormData(
   ): bool {
-    if($this->acceptHeader->contentType() === null){
+    if($this->acceptHeader->getContentType() === null){
       return false;
     }
 
     return preg_match(
       "#^multipart/form-data#",
-      $this->acceptHeader->contentType()
+      $this->acceptHeader->getContentType()
     ) === 1;
   }
 
   private function isFormUrlEncoded(
   ): bool {
-    if($this->acceptHeader->contentType() === null){
+    if($this->acceptHeader->getContentType() === null){
       return false;
     }
 
     return preg_match(
       "#^application/x-www-form-urlencoded#",
-      $this->acceptHeader->contentType()
+      $this->acceptHeader->getContentType()
     ) === 1;
   }
 
   private function queryDecode(
   ): void {
-    if($this->acceptHeader->contentQuery() !== null){
+    if($this->acceptHeader->getRequestUrlQuery() !== null){
       parse_str(
-        $this->acceptHeader->contentQuery(), 
+        $this->acceptHeader->getRequestUrlQuery(), 
         $this->query
       );      
     }
@@ -65,7 +65,7 @@ class Request
   private function bodyDecode(
   ): void {
     $this->body = json_decode(
-      $this->acceptHeader->contentBody()
+      $this->acceptHeader->getContentBody()
     );
   }
 
@@ -104,7 +104,7 @@ class Request
       preg_replace(
         "#--\r\n$#",
         "",
-        $this->acceptHeader->contentBody()
+        $this->acceptHeader->getContentBody()
       ),
       -1, 
       PREG_SPLIT_NO_EMPTY
@@ -134,7 +134,7 @@ class Request
   private function urlEncode(
   ): void {
     parse_str( 
-      $this->acceptHeader->contentBody(), 
+      $this->acceptHeader->getContentBody(), 
       $this->body
     );
   }  

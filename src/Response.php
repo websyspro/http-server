@@ -35,14 +35,17 @@ class Response
   }
 
   public function json(
-    mixed $json
+    mixed $content
   ): void {
     fwrite(
       $this->streamSocketAccept, 
       $this->data(
         "application/json",
         json_encode(
-          $json
+          [
+            "success" => true,
+            "content" => $content
+          ]
         )
       )
     );    

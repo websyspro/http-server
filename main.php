@@ -1,8 +1,25 @@
 <?php
 
 use Websyspro\HttpServer;
+use Websyspro\Request;
+use Websyspro\Response;
 
 $httpServer = new HttpServer();
+$httpServer->factory(
+	/*
+	 * Aqui o module Main
+	 * **/
+);
+
+$httpServer->listen( 3002 );
+
+
+$httpServer->post( "/", function (Response $res, Request $req) {
+	$res->status( 200 )->json(
+		$req->query
+	);
+});
+
 $httpServer->listen( 3002 );
 
 /*

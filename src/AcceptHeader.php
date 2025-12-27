@@ -111,17 +111,17 @@ class AcceptHeader
     $this->readyBody();
   }
 
-  public function protocolVersion(
+  public function getProtocolVersion(
   ): string|null {
     return $this->propertys["ProtocolVersion"] ?? null;
   }  
 
-  public function method(
+  public function getRequestMethod(
   ): string|null {
     return $this->propertys["Method"] ?? null;
   }
 
-  public function requestUrl(
+  public function getRequestUrl(
   ): string|null {
     if(isset( $this->propertys["RequestUrl"] ) === false) {
       return null;
@@ -135,17 +135,17 @@ class AcceptHeader
     return $requestUrl;
   }
 
-  public function contentType(
+  public function getContentType(
   ): string|null {
     return $this->propertys["ContentType"] ?? null;
   }   
 
-  public function contentBody(
+  public function getContentBody(
   ): string|null {
     return $this->propertys["ContentBody"] ?? null;
   }
 
-  public function contentQuery(
+  public function getRequestUrlQuery(
   ): string|null {
     if(isset( $this->propertys["RequestUrl"] ) === false) {
       return null;

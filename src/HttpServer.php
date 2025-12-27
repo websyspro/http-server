@@ -3,6 +3,8 @@
 namespace Websyspro;
 
 use Exception;
+use Websyspro\Commons\Collection;
+use Websyspro\Enums\RequestMethod;
 use Websyspro\Logger\Enums\LogType;
 use Websyspro\Logger\Log;
 
@@ -15,20 +17,43 @@ class HttpServer
   private string|null $error = null;
   private int $socketConnections = 0;
   private int $socketMaxConnections = 500;
+  private Collection $routers;
 
+  public function __construct(
+  ){
+    $this->routers = new Collection();
+  }
 
-  private function startShutdown(
+  public function factory(
+  ): void {}
+
+  private function addRoute(
+    RequestMethod $requestMethod,
+    string $path,
+    callable $fn
   ): void {
-    if( function_exists( "pcntl_async_signals" )){
-      if( function_exists( "pcntl_signal" )){
-        if( defined( "SIGTERM" ) && defined( "SIGINT" )){
-          pcntl_async_signals(true);
+    $this->routers->add(
+      new Router(
+        $requestMethod, 
+        $path, 
+        $fn
+      )
+    );
+  }
 
-          pcntl_signal(SIGTERM, fn() => $this->shutdown());
-          pcntl_signal(SIGINT, fn() => $this->shutdown());
-        }
-      }
-    }
+  public function getRouters(
+  ): Collection {
+    return $this->routers;
+  }
+
+  public function post(
+    string $path,
+    callable $fn
+  ) : void {
+    $this->addRoute( 
+      RequestMethod::POST,
+      $path, $fn
+    );
   }
 
   private function streamSetBlocking(
@@ -120,7 +145,21 @@ class HttpServer
     if(is_resource($this->streamSocket)){
       fclose($this->streamSocket);
     }
-  } 
+  }
+
+  private function startShutdown(
+  ): void {
+    if( function_exists( "pcntl_async_signals" )){
+      if( function_exists( "pcntl_signal" )){
+        if( defined( "SIGTERM" ) && defined( "SIGINT" )){
+          pcntl_async_signals(true);
+
+          pcntl_signal(SIGTERM, fn() => $this->shutdown());
+          pcntl_signal(SIGINT, fn() => $this->shutdown());
+        }
+      }
+    }
+  }  
 
   public function listen(
     int $port

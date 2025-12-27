@@ -43,10 +43,10 @@ class AcceptClient
     Log::message(
       LogType::service, 
       sprintf("[%s] %s - %s?%s",  ...[
-        $this->acceptHeader->protocolVersion(),
-        $this->acceptHeader->method(),
-        $this->acceptHeader->requestUrl(),
-        $this->acceptHeader->contentQuery(),
+        $this->acceptHeader->getProtocolVersion(),
+        $this->acceptHeader->getRequestMethod(),
+        $this->acceptHeader->getRequestUrl(),
+        $this->acceptHeader->getRequestUrlQuery(),
       ]),
       $this->detailClient->getIp(),
       $this->detailClient->getPort()
@@ -89,12 +89,25 @@ class AcceptClient
 
   private function readyRequestSend(
   ): void {
-    $this->response->json(
-      [
-        "success" => true,
-        "content" => $this->request->query
-      ]
-    );    
+    $routers = $this->httpServer->getRouters()
+      ->where(fn(Router $router) => (
+        $router->valid(
+          $this->acceptHeader->getRequestMethod(), 
+          $router->getPath()
+        )
+      ));
+
+
+    if($this->httpServer->getRouters()->first() instanceof Router) {
+      $this->httpServer->getRouters()->first()->execute(
+        $this->response,
+        $this->request
+      );
+    } else {
+      $this->response->json(
+        $this->request->query
+      );
+    }
   }
 
   private function readyAccept(
