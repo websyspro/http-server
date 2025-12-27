@@ -8,6 +8,7 @@ use Websyspro\Logger\Log;
 
 class HttpServer
 {
+  private bool $running = true;
   private int $port;
   private mixed $streamSocket;
   private string|null $errno = null;
@@ -18,15 +19,32 @@ class HttpServer
   public function __construct(
   ){}
 
+  private function startShutdown(
+  ): void {
+    if(
+      PHP_OS_FAMILY === 'Windows' ||
+      !function_exists('pcntl_async_signals') ||
+      !function_exists('pcntl_signal') ||
+      !defined('SIGTERM')
+    ){
+      return;
+    }
+
+    pcntl_async_signals(true);
+
+    pcntl_signal(SIGTERM, fn() => $this->shutdown());
+    pcntl_signal(SIGINT, fn() => $this->shutdown()); 
+  }
+
   private function streamSetBlocking(
   ): void {
-    stream_set_blocking(
+    @stream_set_blocking(
       $this->streamSocket,
       true
     );
   }
 
-  private function httpClient(
+  private function httpServer(
   ): HttpServer {
     return $this;
   }
@@ -43,9 +61,7 @@ class HttpServer
   private function streamSocketAccept(
   ): mixed {
     return @stream_socket_accept(
-      $this->streamSocket,
-      0,
-      $peername
+      $this->streamSocket, 1
     );
   }
 
@@ -65,16 +81,16 @@ class HttpServer
   } 
   
   private function startLoop(
-  ): never {
+  ) {
     Log::message(
       LogType::service, 
       "Server started on port {$this->port}"
     );
 
-    while(true){
+    while($this->running){
       try {
-        new ClientAccept(
-          $this->httpClient(), 
+        new AcceptClient(
+          $this->httpServer(), 
           $this->streamSocketAccept()
         );
       } catch (Exception $error) {
@@ -89,7 +105,6 @@ class HttpServer
   private function start(
   ): void {
     $this->streamSocket = $this->streamSocketServer();
-    
     if ($this->streamSocket === false) {
       throw new Exception(
         "Error: {$this->errno} - {$this->error}"
@@ -100,10 +115,24 @@ class HttpServer
     $this->startLoop();
   }
 
+  public function shutdown(
+  ): void {
+    Log::message(
+      LogType::service,
+      "Shutdown iniciado"
+    );
+
+    $this->running = false;
+    if(is_resource($this->streamSocket)){
+      fclose($this->streamSocket);
+    }
+  } 
+
   public function listen(
     int $port
   ): void {
     $this->port = $port;
+    $this->startShutdown();
     $this->start();
   }
 }

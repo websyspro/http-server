@@ -2,9 +2,14 @@
 
 namespace Websyspro;
 
-class ClientAccept
+use Websyspro\Logger\Enums\LogType;
+use Websyspro\Logger\Log;
+
+class AcceptClient
 {
-  private ClientAcceptHeader $clientAcceptHeader;
+  private AcceptHeader $acceptHeader;
+  private Request $request;
+  private Response $response;
 
   public function __construct(
     private HttpServer $httpServer,
@@ -13,10 +18,28 @@ class ClientAccept
     $this->ready();
   }
 
+  private function readyRequestLog(
+  ): void {
+    Log::message(
+      LogType::service, 
+      sprintf("[%s] %s - %s",  ...[
+        $this->acceptHeader->protocolVersion(),
+        $this->acceptHeader->method(),
+        $this->acceptHeader->requestUrl() 
+      ])
+    );
+  }
+
   public function readyRequest(
   ): void {
-    $this->clientAcceptHeader = new ClientAcceptHeader(
+    $this->response = new Response(
       $this->streamSocketAccept
+    );
+
+    $this->request = new Request(
+      $this->acceptHeader = new AcceptHeader(
+        $this->streamSocketAccept
+      )
     );
   }
 
@@ -35,22 +58,10 @@ class ClientAccept
       } else {
         $this->httpServer->incrementConnection();
         $this->readyRequest();
+        $this->readyRequestLog();
 
-        $json = json_encode([
-          "message" => date("Y-m-d H:i:s")
-        ]);
+        $this->response->json($this->request->body);
 
-        $contentBody = json_encode(
-          $this->clientAcceptHeader->propertys["ContentBody"]
-        );
-
-        $response  = "HTTP/1.1 200\r\n";
-        $response .= "Content-Type: application/json\r\n";
-        $response .= "Content-Length: " . strlen($contentBody) . "\r\n";
-        $response .= "Connection: close\r\n\r\n";
-        $response .= $contentBody;
-
-        fwrite($this->streamSocketAccept, $response);
         $this->closeRequest();
         $this->httpServer->decrementConnection();
       }

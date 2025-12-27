@@ -2,14 +2,14 @@
 
 namespace Websyspro;
 
-class ClientAcceptHeader
+class AcceptHeader
 {
   public array $propertys = [];
   private int $maxPacketSize = 8192;
   private int $packetsReceived = 0;
 
   public function __construct(
-    private mixed $streamSocketAccept    
+    public mixed $streamSocketAccept
   ){
     $this->ready();
   }
@@ -25,8 +25,12 @@ class ClientAcceptHeader
   }
 
   private function removeBreak(
-    string $value
-  ): string {
+    string|null $value = null
+  ): string|null {
+    if (is_null($value)) {
+      return null;
+    }
+
     return preg_replace(
       "#(^\r\n)|(\r\n$)#",
       "", 
@@ -38,7 +42,7 @@ class ClientAcceptHeader
     string $row
   ): void {
     if ((bool)preg_match(
-      "#^(GET|POST|PUT|PATCH|HEAD|OPTIONS)#", 
+      "#^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)#", 
       $row
     ) === true){
       [ $method, $requestUrl, $protocolVersion ] = preg_split(
@@ -89,12 +93,6 @@ class ClientAcceptHeader
       $this->propertys["ContentBody"] .= $chunkReceived;
       $this->packetsReceived += strlen( $chunkReceived );
     }
-
-    if (empty($this->propertys["ContentBody"]) === false) {
-      $this->propertys["ContentBody"] = json_decode(
-        $this->propertys["ContentBody"]
-      );
-    }
   }
 
   private function ready(
@@ -110,5 +108,30 @@ class ClientAcceptHeader
     }
 
     $this->readyBody();
-  } 
+  }
+
+  public function protocolVersion(
+  ): string {
+    return $this->propertys["ProtocolVersion"];
+  }  
+
+  public function method(
+  ): string {
+    return $this->propertys["Method"];
+  }
+
+  public function requestUrl(
+  ): string {
+    return $this->propertys["RequestUrl"];
+  }
+
+  public function contentType(
+  ): string {
+    return $this->propertys["ContentType"];
+  }   
+
+  public function contentBody(
+  ): string {
+    return $this->propertys["ContentBody"];
+  }  
 }
