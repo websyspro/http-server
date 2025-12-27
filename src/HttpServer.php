@@ -35,7 +35,7 @@ class HttpServer
   ): void {
     @stream_set_blocking(
       $this->streamSocket,
-      false
+      true
     );
   }
 

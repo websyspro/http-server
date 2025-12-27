@@ -48,7 +48,7 @@ class AcceptClient
   ): void {
     @stream_set_blocking(
       $this->streamSocketAccept,
-      false
+      true
     );    
   }
 
@@ -69,14 +69,6 @@ class AcceptClient
         $this->readyNoBlocking();
         $this->readyRequest();
         $this->readyRequestLog();
-
-        // $this->response->json(
-        //   [
-        //     "query" => $this->request->query,
-        //     "files" => $this->request->files,
-        //     "body"  => $this->request->body,
-        //   ]
-        // );
 
         $this->response->json(
           value: [
