@@ -11,13 +11,12 @@ $httpServer->factory(
 	 * **/
 );
 
-$httpServer->listen( 3002 );
+$httpServer->post( "/", function(Response $res, Request $req) {
+	$res->status( 200 )->json( $req->body );
+});
 
-
-$httpServer->post( "/", function (Response $res, Request $req) {
-	$res->status( 200 )->json(
-		$req->query
-	);
+$httpServer->get( "/users", function(Response $res, Request $req) {
+	$res->status( 200 )->json( $req->query );
 });
 
 $httpServer->listen( 3002 );

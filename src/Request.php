@@ -18,45 +18,45 @@ class Request
 
   private function isApplicationJson(
   ): bool {
-    if($this->acceptHeader->getContentType() === null){
+    if($this->acceptHeader->contentType() === null){
       return false;
     }
 
     return preg_match(
       "#^application/json#", 
-      $this->acceptHeader->getContentType()
+      $this->acceptHeader->contentType()
     ) === 1;
   }
 
   private function isMultipartFormData(
   ): bool {
-    if($this->acceptHeader->getContentType() === null){
+    if($this->acceptHeader->contentType() === null){
       return false;
     }
 
     return preg_match(
       "#^multipart/form-data#",
-      $this->acceptHeader->getContentType()
+      $this->acceptHeader->contentType()
     ) === 1;
   }
 
   private function isFormUrlEncoded(
   ): bool {
-    if($this->acceptHeader->getContentType() === null){
+    if($this->acceptHeader->contentType() === null){
       return false;
     }
 
     return preg_match(
       "#^application/x-www-form-urlencoded#",
-      $this->acceptHeader->getContentType()
+      $this->acceptHeader->contentType()
     ) === 1;
   }
 
   private function queryDecode(
   ): void {
-    if($this->acceptHeader->getRequestUrlQuery() !== null){
+    if($this->acceptHeader->requestUrlQuery() !== null){
       parse_str(
-        $this->acceptHeader->getRequestUrlQuery(), 
+        $this->acceptHeader->requestUrlQuery(), 
         $this->query
       );      
     }
@@ -65,7 +65,7 @@ class Request
   private function bodyDecode(
   ): void {
     $this->body = json_decode(
-      $this->acceptHeader->getContentBody()
+      $this->acceptHeader->contentBody()
     );
   }
 
@@ -104,7 +104,7 @@ class Request
       preg_replace(
         "#--\r\n$#",
         "",
-        $this->acceptHeader->getContentBody()
+        $this->acceptHeader->contentBody()
       ),
       -1, 
       PREG_SPLIT_NO_EMPTY
@@ -134,7 +134,7 @@ class Request
   private function urlEncode(
   ): void {
     parse_str( 
-      $this->acceptHeader->getContentBody(), 
+      $this->acceptHeader->contentBody(), 
       $this->body
     );
   }  

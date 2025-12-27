@@ -48,13 +48,23 @@ class HttpServer
 
   public function post(
     string $path,
-    callable $fn
+    callable|null $fn = null
   ) : void {
     $this->addRoute( 
       RequestMethod::POST,
       $path, $fn
     );
   }
+
+   public function get(
+    string $path,
+    callable|null $fn = null
+  ) : void {
+    $this->addRoute( 
+      RequestMethod::GET,
+      $path, $fn
+    );
+  } 
 
   private function streamSetBlocking(
   ): void {

@@ -24,6 +24,12 @@ class AcceptHeader
     );
   }
 
+  private function isQueryInUrl(): bool {
+    return preg_match(
+      "#\?#", $this->propertys["RequestUrl"]
+    ) === 1;
+  }
+
   private function removeBreak(
     string|null $value = null
   ): string|null {
@@ -111,17 +117,17 @@ class AcceptHeader
     $this->readyBody();
   }
 
-  public function getProtocolVersion(
+  public function protocolVersion(
   ): string|null {
     return $this->propertys["ProtocolVersion"] ?? null;
   }  
 
-  public function getRequestMethod(
+  public function requestMethod(
   ): string|null {
     return $this->propertys["Method"] ?? null;
   }
 
-  public function getRequestUrl(
+  public function requestUrl(
   ): string|null {
     if(isset( $this->propertys["RequestUrl"] ) === false) {
       return null;
@@ -135,19 +141,23 @@ class AcceptHeader
     return $requestUrl;
   }
 
-  public function getContentType(
+  public function contentType(
   ): string|null {
     return $this->propertys["ContentType"] ?? null;
   }   
 
-  public function getContentBody(
+  public function contentBody(
   ): string|null {
     return $this->propertys["ContentBody"] ?? null;
   }
 
-  public function getRequestUrlQuery(
+  public function requestUrlQuery(
   ): string|null {
     if(isset( $this->propertys["RequestUrl"] ) === false) {
+      return null;
+    }
+
+    if($this->isQueryInUrl() === false) {
       return null;
     }
 

@@ -43,10 +43,10 @@ class AcceptClient
     Log::message(
       LogType::service, 
       sprintf("[%s] %s - %s?%s",  ...[
-        $this->acceptHeader->getProtocolVersion(),
-        $this->acceptHeader->getRequestMethod(),
-        $this->acceptHeader->getRequestUrl(),
-        $this->acceptHeader->getRequestUrlQuery(),
+        $this->acceptHeader->protocolVersion(),
+        $this->acceptHeader->requestMethod(),
+        $this->acceptHeader->requestUrl(),
+        $this->acceptHeader->requestUrlQuery(),
       ]),
       $this->detailClient->getIp(),
       $this->detailClient->getPort()
@@ -55,16 +55,18 @@ class AcceptClient
 
   private function readyError(
     int $code,
-    string $content,
-    string|null $contentLog = null
+    string $message,
+    string|null $messageLog = null
   ): void {
-    $this->response->status($code)->json(
-      [ "success" => false, "content" => $content ]
-    );
+    $this->response
+      ->status($code)
+      ->json(
+        $message
+      );
 
     Log::error(
       LogType::service,
-      $contentLog ?? $content,
+      $messageLog ?? $message,
       $this->detailClient->getIp(),
       $this->detailClient->getPort()
     );    
@@ -80,26 +82,43 @@ class AcceptClient
   private function readyInternalError(
     Exception $exception
   ): void {
-    $this->readyError(
-      $exception->getCode(), 
-      "An unexpected error occurred while processing your request.",
+    [ $code, $message ] = [ 
+      $exception->getCode(),
       $exception->getMessage()
-    );
+    ];
+
+    if(in_array($exception->getCode(), [
+      Response::HTTP_INTERNAL_SERVER_ERROR
+    ])){
+      $this->readyError(
+        $code, 
+        "An unexpected error occurred while processing your request.",
+        $message
+      );
+    } else {
+      $this->readyError(
+        $code, 
+        $message
+      );
+    }
   }  
 
   private function readyRequestSend(
   ): void {
     $routers = $this->httpServer->getRouters()
       ->where(fn(Router $router) => (
-        $router->valid(
-          $this->acceptHeader->getRequestMethod(), 
-          $router->getPath()
+        $router->isValid(
+          $this->acceptHeader->requestMethod(), 
+          $this->acceptHeader->requestUrl(),
         )
       ));
 
+    if($routers->exist() === false ){
+      Error::notFound( "Controller not found" );
+    }
 
-    if($this->httpServer->getRouters()->first() instanceof Router) {
-      $this->httpServer->getRouters()->first()->execute(
+    if($routers->first() instanceof Router) {
+      $routers->first()->execute(
         $this->response,
         $this->request
       );
@@ -148,7 +167,7 @@ class AcceptClient
   ): void {
     try {
       if( $this->readyAccept() ){
-        if( $this->readyIsMaxExceded() ){
+        if( $this->readyIsMaxExceded()){
           $this->readyRequest();
           $this->readyRequestFail();
           $this->readyClose();

@@ -2,38 +2,72 @@
 
 namespace Websyspro;
 
+use Websyspro\Commons\Collection;
 use Websyspro\Enums\RequestMethod;
 
 class Router
 {
   public function __construct(
     private RequestMethod $requestMethod,
-    private string $path,
+    private string $requestUrl,
     private mixed $fn
   ){}
 
-  public function getPath(
-  ): string {
-    return $this->path;
-  }
-
   public function equalRequestMethod(
-    RequestMethod $requestMethod
+    string $requestMethod
   ): bool {
-    return $this->requestMethod === $requestMethod;
+    return $this->requestMethod->name === $requestMethod;
   }
 
-  public function equalPath(
-    string $path
-  ): bool {
-    return $this->path === $path;
+  private function createPaths(
+    string|null $requestUrl = null
+  ): Collection {
+    $createPaths = new Collection(
+      explode(
+        "/", 
+        $requestUrl ?? $this->requestUrl
+      )
+    );
+
+    return $createPaths->where(
+      fn(string $path) => empty($path) === false
+    );
   }
 
-  public function valid(
+  public function equalRequestUrl(
+    string $requestUrl
+  ): bool {
+    $requestUrlRouter = $this->createPaths();
+    $requestUrlHeader = $this->createPaths( $requestUrl );
+
+    if($requestUrlRouter->count() !== $requestUrlHeader->count()){
+      return false;
+    }
+
+    return $requestUrlRouter
+      ->mapper(
+        function(string $path, int $index) use($requestUrlHeader) {
+          $hasParams = preg_match(
+            "#(^\{.*\}$)|(^\{.*\}\?$)|(^:.*)|(^:.*\?$)#", 
+            $path
+          ) === 1;
+
+          if($hasParams === true){
+            return $hasParams;
+          }
+          
+          return $path === $requestUrlHeader
+            ->eq($index)->first();
+        }
+      )->where(fn(bool $val) => $val === false)->exist() === false;
+  }
+
+  public function isValid(
     string $requestMethod,
-    string $path
+    string $requestUrl
   ): bool {
-    return $this->requestMethod->value === $requestMethod;
+    return $this->equalRequestMethod( $requestMethod )
+        && $this->equalRequestUrl( $requestUrl );
   }
 
   public function execute(

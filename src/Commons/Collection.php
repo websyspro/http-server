@@ -35,37 +35,37 @@ class Collection
   }
 
   public function mapper(
-    callable|object $callback
+    callable|object $fn
   ): Collection {
-    if(is_callable( $callback ) === false){
+    if(is_callable( $fn ) === false){
       // TODO:: mapper
       return new Collection();
     }
 
     return new Collection(
       Utils::mapper(
-        $this->items, $callback
+        $this->items, $fn
       )
     );
   }
 
   public function where(
-    callable $callable
+    callable $fn
   ): Collection {
-    return new Collection(Utils::where($this->items, $callable));
+    return new Collection(Utils::where($this->items, $fn));
   }
 
   public function find(
-    callable $callable
+    callable $fn
   ): mixed {
-    return Utils::find($this->items, $callable);
+    return Utils::find($this->items, $fn);
   }
 
   public function reduce(
     mixed $curremt,
-    callable $callable
+    callable $fn
   ): mixed {
-    return Utils::reduce($curremt, $this->items, $callable);
+    return Utils::reduce($curremt, $this->items, $fn);
   }
 
   public function slice(
