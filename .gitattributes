@@ -1,0 +1,53 @@
+# Normalizar quebras de linha automaticamente
+* text=auto
+
+# Arquivos PHP sempre com LF (Unix)
+*.php text eol=lf
+
+# Arquivos de configuração
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+*.ini text eol=lf
+*.env text eol=lf
+*.env.example text eol=lf
+
+# Composer
+composer.json text eol=lf
+composer.lock text eol=lf
+
+# Docker
+Dockerfile text eol=lf
+docker-compose*.yml text eol=lf
+.dockerignore text eol=lf
+
+# Scripts shell sempre com LF
+*.sh text eol=lf
+
+# Arquivos Windows sempre com CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Documentação
+*.md text eol=lf
+*.txt text eol=lf
+README* text eol=lf
+LICENSE* text eol=lf
+
+# Git
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Arquivos binários (não converter)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.rar binary

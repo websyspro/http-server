@@ -86,6 +86,14 @@ class Error
     );
   }
 
+  public static function serviceUnavailableError(
+    string $message
+  ): Exception {
+    return throw new Exception(
+      message: $message, code: Error::HTTP_SERVICE_UNAVAILABLE
+    );
+  }  
+
   public static function internalServerError(
     string $message
   ): Exception {

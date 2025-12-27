@@ -2,11 +2,10 @@
 
 namespace Websyspro;
 
-use Exception;
-use Throwable;
-use Websyspro\Exceptions\Error;
 use Websyspro\Logger\Enums\LogType;
 use Websyspro\Logger\Log;
+use Exception;
+use Websyspro\Exceptions\Error;
 
 class AcceptClient
 {
@@ -71,12 +70,11 @@ class AcceptClient
     );    
   }
 
-  private function readyFail(
+  private function readyRequestFail(
   ): void {
-    $this->readyError(
-      503, 
+    Error::serviceUnavailableError(
       "Server is currently overloaded. Please try again later."
-    );   
+    );
   }
 
   private function readyInternalError(
@@ -135,29 +133,29 @@ class AcceptClient
 
   public function ready(
   ): void {
-    if( $this->readyAccept() ){
-      if( $this->readyIsMaxExceded() ){
-        $this->readyRequest();
-        $this->readyFail();
-        $this->readyClose();
-      } else {
-        try {
-          $this->readyInc();
-          $this->readyNoBlocking();
+    try {
+      if( $this->readyAccept() ){
+        if( $this->readyIsMaxExceded() ){
           $this->readyRequest();
-          $this->readyRequestLog();
-          $this->readyRequestSend();
+          $this->readyRequestFail();
           $this->readyClose();
-          $this->readyDec();
-        } catch( Exception $error ){
-          $this->readyInternalError(
-            $error
-          );
-
-          $this->readyClose();
-          $this->readyDec();
+        } else {
+            $this->readyInc();
+            $this->readyNoBlocking();
+            $this->readyRequest();
+            $this->readyRequestLog();
+            $this->readyRequestSend();
+            $this->readyClose();
+            $this->readyDec();
+          }
         }
-      }
-    }
+    } catch( Exception $error ){
+      $this->readyInternalError(
+        $error
+      );
+
+      $this->readyClose();
+      $this->readyDec();
+    }   
   }
 }
