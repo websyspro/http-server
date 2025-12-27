@@ -75,11 +75,6 @@ class HttpServer
     $this->socketConnections--;
   } 
 
-  public function startUsLeep(
-  ): void {
-    usleep(1000);
-  }
-  
   private function startLoop(
   ) {
     Log::message(
@@ -94,7 +89,6 @@ class HttpServer
           $this->streamSocketAccept()
         );
 
-        $this->startUsLeep();
       } catch (Exception $error) {
         throw new Exception(
           $error

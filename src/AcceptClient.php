@@ -44,14 +44,6 @@ class AcceptClient
     );
   }
 
-  public function readyNoBlocking(
-  ): void {
-    @stream_set_blocking(
-      $this->streamSocketAccept,
-      true
-    );    
-  }
-
   public function closeRequest(
   ): void {
     fflush($this->streamSocketAccept);
@@ -66,8 +58,7 @@ class AcceptClient
         echo "Connection exceded\n";
       } else {
         $this->httpServer->incrementConnection();
-        $this->readyNoBlocking();
-        $this->readyRequest();
+         $this->readyRequest();
         $this->readyRequestLog();
 
         $this->response->json(
