@@ -2,6 +2,9 @@
 
 namespace Websyspro;
 
+use Exception;
+use Throwable;
+use Websyspro\Exceptions\Error;
 use Websyspro\Logger\Enums\LogType;
 use Websyspro\Logger\Log;
 
@@ -10,6 +13,7 @@ class AcceptClient
   private AcceptHeader $acceptHeader;
   private Request $request;
   private Response $response;
+  private DetailClient $detailClient;
 
   public function __construct(
     private HttpServer $httpServer,
@@ -29,6 +33,10 @@ class AcceptClient
         $this->streamSocketAccept
       )
     );
+
+    $this->detailClient = new DetailClient(
+      $this->streamSocketAccept
+    );
   }  
 
   private function readyRequestLog(
@@ -40,26 +48,46 @@ class AcceptClient
         $this->acceptHeader->method(),
         $this->acceptHeader->requestUrl(),
         $this->acceptHeader->contentQuery(),
-      ])
+      ]),
+      $this->detailClient->getIp(),
+      $this->detailClient->getPort()
     );
   }
 
-  private function readyErrror(
+  private function readyError(
+    int $code,
+    string $content,
+    string|null $contentLog = null
   ): void {
-    $this->response
-      ->status(503)
-      ->json(
-        [
-          "success" => false,
-          "content" => "Server is currently overloaded. Please try again later."
-        ]
-      );
+    $this->response->status($code)->json(
+      [ "success" => false, "content" => $content ]
+    );
 
     Log::error(
       LogType::service,
-      "Server is currently overloaded. Please try again later."
-    );
+      $contentLog ?? $content,
+      $this->detailClient->getIp(),
+      $this->detailClient->getPort()
+    );    
   }
+
+  private function readyFail(
+  ): void {
+    $this->readyError(
+      503, 
+      "Server is currently overloaded. Please try again later."
+    );   
+  }
+
+  private function readyInternalError(
+    Exception $exception
+  ): void {
+    $this->readyError(
+      $exception->getCode(), 
+      "An unexpected error occurred while processing your request.",
+      $exception->getMessage()
+    );
+  }  
 
   private function readyRequestSend(
   ): void {
@@ -107,19 +135,28 @@ class AcceptClient
 
   public function ready(
   ): void {
-    if($this->readyAccept()){
-      if(!$this->readyIsMaxExceded()){
+    if( $this->readyAccept() ){
+      if( $this->readyIsMaxExceded() ){
         $this->readyRequest();
-        $this->readyErrror();
+        $this->readyFail();
         $this->readyClose();
       } else {
-        $this->readyInc();
-        $this->readyNoBlocking();
-        $this->readyRequest();
-        $this->readyRequestLog();
-        $this->readyRequestSend();
-        $this->readyClose();
-        $this->readyDec();
+        try {
+          $this->readyInc();
+          $this->readyNoBlocking();
+          $this->readyRequest();
+          $this->readyRequestLog();
+          $this->readyRequestSend();
+          $this->readyClose();
+          $this->readyDec();
+        } catch( Exception $error ){
+          $this->readyInternalError(
+            $error
+          );
+
+          $this->readyClose();
+          $this->readyDec();
+        }
       }
     }
   }

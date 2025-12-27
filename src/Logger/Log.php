@@ -29,24 +29,10 @@ class Log
   }
 
   private static function getOrigem(
+    string $logIp = "::1",
+    string $logPort = "00000"   
   ): string {
-    $remoteAddr = null;
-    $serverPort = null;
-
-    if(isset($_SERVER["REMOTE_ADDR"])){
-      [ "REMOTE_ADDR" => $remoteAddr, 
-        "SERVER_PORT" => $serverPort ] = $_SERVER;
-
-      if($serverPort !== null){
-        $serverPort = str_pad(
-          $serverPort, 5, "0", STR_PAD_LEFT
-        );
-      }  
-    }
-  
-    return $remoteAddr !== null && $serverPort !== null
-      ? "[{$remoteAddr}]:{$serverPort}"
-      : "[::1]:00000";
+    return "[{$logIp}]:{$logPort}";
   }
 
   private static function isStartTimer(
@@ -58,14 +44,21 @@ class Log
   
   public static function message(
     LogType $logType,
-    string $logText
+    string $logText,
+    string $logIp = "::1",
+    string $logPort = "00000" 
   ): bool {
     Log::isStartTimer();
     fwrite( fopen('php://stdout', 'w'), (
       sprintf("\x1b[37m%s %s\x1b[32m LOG \x1b[33m[{$logType->value}] \x1b[32m{$logText}\x1b[37m \x1b[37m+%sms\n", 
-        Log::getNow(),
-        Log::getOrigem(),
-        Log::getNowTimer(),
+        ... [
+          Log::getNow(),
+          Log::getOrigem(
+            $logIp,
+            $logPort
+          ),
+          Log::getNowTimer()
+        ]
       )
     ));
 
@@ -74,14 +67,21 @@ class Log
 
   public static function error(
     LogType $logType,
-    string $logText      
+    string $logText,
+    string $logIp = "::1",
+    string $logPort = "00000"       
   ): bool {
     Log::isStartTimer();
     fwrite( fopen('php://stdout', 'w'), (
       sprintf( "\x1b[37m%s %s\x1b[32m LOG \x1b[33m[{$logType->value}] \x1b[31m{$logText} \x1b[37m+%sms\n",
-        Log::getNow(),
-        Log::getOrigem(),
-        Log::getNowTimer(),
+        ... [
+          Log::getNow(),
+          Log::getOrigem(
+            $logIp,
+            $logPort
+          ),
+          Log::getNowTimer()
+        ]
       )
     ));
 

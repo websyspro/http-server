@@ -96,7 +96,6 @@ class HttpServer
     }
   }
 
-
   private function start(
   ): void {
     $this->streamSocket = $this->streamSocketServer();
