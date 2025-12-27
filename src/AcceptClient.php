@@ -65,7 +65,7 @@ class AcceptClient
           [
             "query" => $this->request->query,
             "files" => $this->request->files,
-            "body" => $this->request->body,
+            "body"  => $this->request->body,
           ]
         );
 
