@@ -22,10 +22,11 @@ class AcceptClient
   ): void {
     Log::message(
       LogType::service, 
-      sprintf("[%s] %s - %s",  ...[
+      sprintf("[%s] %s - %s?%s",  ...[
         $this->acceptHeader->protocolVersion(),
         $this->acceptHeader->method(),
-        $this->acceptHeader->requestUrl() 
+        $this->acceptHeader->requestUrl(),
+        $this->acceptHeader->contentQuery(),
       ])
     );
   }
@@ -60,7 +61,13 @@ class AcceptClient
         $this->readyRequest();
         $this->readyRequestLog();
 
-        $this->response->json($this->request->body);
+        $this->response->json(
+          [
+            "query" => $this->request->query,
+            "files" => $this->request->files,
+            "body" => $this->request->body,
+          ]
+        );
 
         $this->closeRequest();
         $this->httpServer->decrementConnection();

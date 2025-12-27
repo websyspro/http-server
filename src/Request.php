@@ -6,8 +6,9 @@ use Websyspro\Commons\DataList;
 
 class Request
 {
-  public mixed $body = null;
-  public mixed $files = null;
+  public mixed $body = [];
+  public mixed $files = [];
+  public mixed $query = [];
 
   public function __construct(
     private AcceptHeader $acceptHeader   
@@ -17,27 +18,47 @@ class Request
 
   private function isApplicationJson(
   ): bool {
-    return (bool)preg_match(
+    if($this->acceptHeader->contentType() === null){
+      return false;
+    }
+
+    return preg_match(
       "#^application/json#", 
       $this->acceptHeader->contentType()
-    ) === true;
+    ) === 1;
   }
 
   private function isMultipartFormData(
   ): bool {
-    return (bool)preg_match(
+    if($this->acceptHeader->contentType() === null){
+      return false;
+    }
+
+    return preg_match(
       "#^multipart/form-data#",
       $this->acceptHeader->contentType()
-    ) === true;
+    ) === 1;
   }
 
   private function isFormUrlEncoded(
   ): bool {
-    return (bool)preg_match(
+    if($this->acceptHeader->contentType() === null){
+      return false;
+    }
+
+    return preg_match(
       "#^application/x-www-form-urlencoded#",
       $this->acceptHeader->contentType()
-    ) === true;
+    ) === 1;
   }
+
+  private function queryDecode(
+  ): void {
+    parse_str(
+      $this->acceptHeader->contentQuery(), 
+      $this->query
+    );
+  }  
   
   private function bodyDecode(
   ): void {
@@ -49,12 +70,15 @@ class Request
   private function isFileContentDisposition(
     string $contentDisposition,
   ): bool {
-    return (bool)preg_match("#filename#", $contentDisposition) === true;
+    return preg_match(
+      "#filename#",
+      $contentDisposition
+    ) === 1;
   }
   
   private function formdDataDecode(
     string $formData
-  ): FileFormData|array {
+  ): FileFormData|TextFormData {
     $formData = preg_split(
       "#\r\n#", 
       preg_replace(
@@ -65,15 +89,10 @@ class Request
     );
 
     [ $contentDisposition ] = $formData;
-
-    if( $this->isFileContentDisposition( $contentDisposition )){
-      return new FileFormData( 
-        $contentDisposition,
-        $formData
-      );
-    }
-
-    return [ $contentDisposition ];
+    return $this->isFileContentDisposition(
+      $contentDisposition
+    ) ? new FileFormData( $formData ) 
+      : new TextFormData( $formData );
   }
 
   private function formDataToList(
@@ -92,21 +111,21 @@ class Request
 
   private function formData(
   ): void {
-    $formDataList = array_map(
-      fn(string $formData) => (
-        $this->formdDataDecode(
-          $formData
-        )
-      ),
-      $this->formDataToList()
+    $formDataItems = array_map(
+      fn(string $formData): FileFormData|TextFormData => (
+        $this->formdDataDecode( $formData)
+      ), $this->formDataToList()
     );
 
-    // ----------------------------912907606829627820448582
-
-    // print_r($formDataList);
-    //var_dump($this->acceptHeader->contentType());
-    //var_dump($this->acceptHeader->contentBody());
-
+    array_map(
+      function( FileFormData|TextFormData $formData) {
+        if( $formData instanceof FileFormData ) {
+          $this->files[$formData->getKey()] = $formData;
+        } else if( $formData instanceof TextFormData ) {
+          $this->body[$formData->getKey()] = $formData->value;
+        }
+      }, $formDataItems
+    );
   }
 
   private function urlEncode(
@@ -119,6 +138,8 @@ class Request
 
   private function ready(
   ): void {
+    $this->queryDecode();
+
     if($this->isApplicationJson()){
       $this->bodyDecode(); 
     } else

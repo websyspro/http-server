@@ -3,87 +3,62 @@
 namespace Websyspro;
 
 class FileFormData
+extends UtilFormData
 {
-  public string $fieldName;
-  public string $fileName;
-  public string $contentType;
-  public float $fileSize;
-  public string $content;
+  private string $key;
+  public string $file;
+  public string $type;
+  public float $size;
+  public string $body;
 
   public function __construct(
-    private string $contentDisposition,
     private array $formData
   ){
     $this->ready();
+    $this->clear();
   }
 
-  private function readyFieldName(
-  ): void {
-    $this->fieldName = preg_replace(
-      "#.*\bname=\"([^\"]+)\".*#", 
-      "$1",
-      $this->contentDisposition
-    );
-  }  
-
-  private function readyFileName(
-  ): void {
-    $this->fileName = preg_replace(
-      "#.*filename=\"([^\"]+)\".*#", 
-      "$1",
-      $this->contentDisposition
-    );
+  public function getKey(
+  ): string {
+    return $this->key;
   }
 
-  private function readyContentType(
+  private function ready(
   ): void {
-    [ $_, $this->contentType ] = $this->formData;
-    $this->contentType = preg_replace(
-      "#^Content-Type:\s#",
-      "",
-      $this->contentType
-    );
-  }
+    [ $contentDisposition, 
+      $contentType
+    ] = $this->formData;
 
-  private function readyContent(
-  ): void {
-    $this->content = implode( 
+    [ $this->body ] = [
+      implode( 
         "\r\n", 
         array_slice(
-          $this->formData, 3
+          $this->formData,
+          3
+        )
       )
-    );
+    ];
 
-    file_put_contents("D:/Uploads/{$this->fileName}", $this->content);
-  }
-
-  private function readyFileSize(
-  ): void {
-    $this->fileSize = (
+    [ $this->size ] = [
       (float)number_format(
         strlen(
-          $this->content
+          $this->body
         ) / 1024,
         6,
         ".", 
         ""
       )
-    );
+    ];
+
+    [ $this->key, $this->file, $this->type ] = [
+      $this->getValue( "#.*\bname=\"([^\"]+)\".*#", $contentDisposition ),
+      $this->getValue( "#.*filename=\"([^\"]+)\".*#", $contentDisposition ),
+      $this->getValue( "#^Content-Type:\s#", $contentType )
+    ];
   }
 
-  private function readyClear(
+  private function clear(
   ): void {
-    unset($this->contentDisposition);
     unset($this->formData);
-  }
-
-  private function ready(
-  ): void {
-    $this->readyFieldName();
-    $this->readyFileName();
-    $this->readyContentType();
-    $this->readyContent();
-    $this->readyFileSize();
-    $this->readyClear();
-  }
+  }  
 }

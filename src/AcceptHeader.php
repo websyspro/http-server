@@ -111,27 +111,50 @@ class AcceptHeader
   }
 
   public function protocolVersion(
-  ): string {
-    return $this->propertys["ProtocolVersion"];
+  ): string|null {
+    return $this->propertys["ProtocolVersion"] ?? null;
   }  
 
   public function method(
-  ): string {
-    return $this->propertys["Method"];
+  ): string|null {
+    return $this->propertys["Method"] ?? null;
   }
 
   public function requestUrl(
-  ): string {
-    return $this->propertys["RequestUrl"];
+  ): string|null {
+    if(isset( $this->propertys["RequestUrl"] ) === false) {
+      return null;
+    }
+
+    [ $requestUrl ] = preg_split(
+      "#\?#",
+      $this->propertys["RequestUrl"]
+    );
+
+    return $requestUrl;
   }
 
   public function contentType(
-  ): string {
-    return $this->propertys["ContentType"];
+  ): string|null {
+    return $this->propertys["ContentType"] ?? null;
   }   
 
   public function contentBody(
-  ): string {
-    return $this->propertys["ContentBody"];
+  ): string|null {
+    return $this->propertys["ContentBody"] ?? null;
+  }
+
+  public function contentQuery(
+  ): string|null {
+    if(isset( $this->propertys["RequestUrl"] ) === false) {
+      return null;
+    }
+
+    [ $_, $query ] = preg_split(
+      "#\?#",
+      $this->propertys["RequestUrl"]
+    );
+
+    return $query;
   }  
 }
