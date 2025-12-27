@@ -16,24 +16,19 @@ class HttpServer
   private int $socketConnections = 0;
   private int $socketMaxConnections = 500;
 
-  public function __construct(
-  ){}
 
   private function startShutdown(
   ): void {
-    if(
-      PHP_OS_FAMILY === 'Windows' ||
-      !function_exists('pcntl_async_signals') ||
-      !function_exists('pcntl_signal') ||
-      !defined('SIGTERM')
-    ){
-      return;
+    if( function_exists( "pcntl_async_signals" )){
+      if( function_exists( "pcntl_signal" )){
+        if( defined( "SIGTERM" ) && defined( "SIGINT" )){
+          pcntl_async_signals(true);
+
+          pcntl_signal(SIGTERM, fn() => $this->shutdown());
+          pcntl_signal(SIGINT, fn() => $this->shutdown());
+        }
+      }
     }
-
-    pcntl_async_signals(true);
-
-    pcntl_signal(SIGTERM, fn() => $this->shutdown());
-    pcntl_signal(SIGINT, fn() => $this->shutdown()); 
   }
 
   private function streamSetBlocking(

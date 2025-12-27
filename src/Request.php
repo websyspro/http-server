@@ -54,10 +54,12 @@ class Request
 
   private function queryDecode(
   ): void {
-    parse_str(
-      $this->acceptHeader->contentQuery(), 
-      $this->query
-    );
+    if($this->acceptHeader->contentQuery() !== null){
+      parse_str(
+        $this->acceptHeader->contentQuery(), 
+        $this->query
+      );      
+    }
   }  
   
   private function bodyDecode(

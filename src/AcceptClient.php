@@ -61,13 +61,20 @@ class AcceptClient
         $this->readyRequest();
         $this->readyRequestLog();
 
+        // $this->response->json(
+        //   [
+        //     "query" => $this->request->query,
+        //     "files" => $this->request->files,
+        //     "body"  => $this->request->body,
+        //   ]
+        // );
+
         $this->response->json(
-          [
-            "query" => $this->request->query,
-            "files" => $this->request->files,
-            "body"  => $this->request->body,
+          value: [
+            "success" => true,
+            "content" => $this->request->query
           ]
-        );
+        );        
 
         $this->closeRequest();
         $this->httpServer->decrementConnection();

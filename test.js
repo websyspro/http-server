@@ -1,3 +1,11 @@
+const generateUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
 const numberTest = 10000;
 const resultTest = {
   success: 0,
@@ -9,19 +17,24 @@ const resultTest = {
 
 const httpRequestTest = async () => {
   try {
+    const uuid = generateUUID();
     const startTime = performance.now();
-    const response = await fetch('http://localhost:3002');
+    const response = await fetch(`http://localhost:3002?uuid=${uuid}`);
     const endTime = performance.now();
     const responseTime = endTime - startTime;
-    
-    return {
-      success: response.status === 200,
-      time: responseTime
-    };
+    const { success, content } = await response.json();
+
+    if( success === true && content.uuid === uuid ){
+      return { success: success, time: responseTime };      
+    } else {
+      return { success: success, time: responseTime };      
+    }
   } catch (error) {
+    console.log('Error:', error);
     return {
       success: false,
-      time: 0
+      time: 0,
+      data: null
     };
   }
 };
