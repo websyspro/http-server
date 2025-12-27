@@ -5,11 +5,11 @@
 # Situação atual
 # - Falta pegar o payload enviado pelo cliente
 # 
-# - - Por JSON
-# - - Por FormData
-# - - Por FormUrlEncoded
-# - - Por Query
-# - - Por Params
+# - - Por JSON -> OM
+# - - Por FormData -> OM
+# - - Por FormUrlEncoded -> OM
+# - - Por Query -> OM
+# - - Por Params -> OM
 
 # Como usar
 # - $httpClient = new HttpClient();
