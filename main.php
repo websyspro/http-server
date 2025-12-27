@@ -1,5 +1,6 @@
 <?php
 
+use Websyspro\Commons\Utils;
 use Websyspro\HttpServer;
 use Websyspro\Request;
 use Websyspro\Response;
@@ -12,7 +13,7 @@ $httpServer->factory(
 );
 
 $httpServer->post( "/", function(Response $res, Request $req) {
-	$res->status( 200 )->json( $req->body );
+	$res->status( 200 )->json( Utils::generationUuid() );
 });
 
 $httpServer->get( "/users", function(Response $res, Request $req) {
