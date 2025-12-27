@@ -60,7 +60,7 @@ class HttpServer
     );
   }
 
-  public function isConnectionExceded(
+  public function isMaxExceded(
   ): bool {
     return $this->socketConnections >= $this->socketMaxConnections;
   }
@@ -88,7 +88,6 @@ class HttpServer
           $this->httpServer(), 
           $this->streamSocketAccept()
         );
-
       } catch (Exception $error) {
         throw new Exception(
           $error

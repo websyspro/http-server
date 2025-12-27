@@ -18,6 +18,19 @@ class AcceptClient
     $this->ready();
   }
 
+  public function readyRequest(
+  ): void {
+    $this->response = new Response(
+      $this->streamSocketAccept
+    );
+
+    $this->request = new Request(
+      $this->acceptHeader = new AcceptHeader(
+        $this->streamSocketAccept
+      )
+    );
+  }  
+
   private function readyRequestLog(
   ): void {
     Log::message(
@@ -31,20 +44,54 @@ class AcceptClient
     );
   }
 
-  public function readyRequest(
+  private function readyErrror(
   ): void {
-    $this->response = new Response(
-      $this->streamSocketAccept
-    );
+    $this->response
+      ->status(503)
+      ->json(
+        [
+          "success" => false,
+          "content" => "Server is currently overloaded. Please try again later."
+        ]
+      );
 
-    $this->request = new Request(
-      $this->acceptHeader = new AcceptHeader(
-        $this->streamSocketAccept
-      )
+    Log::error(
+      LogType::service,
+      "Server is currently overloaded. Please try again later."
     );
   }
 
-  public function readyNoBlocking(
+  private function readyRequestSend(
+  ): void {
+    $this->response->json(
+      [
+        "success" => true,
+        "content" => $this->request->query
+      ]
+    );    
+  }
+
+  private function readyAccept(
+  ): mixed {
+    return $this->streamSocketAccept;
+  }
+
+  private function readyIsMaxExceded(
+  ): bool {
+    return $this->httpServer->isMaxExceded();
+  }
+
+  private function readyInc(
+  ): void {
+    $this->httpServer->incrementConnection();
+  }
+
+  private function readyDec(
+  ): void {
+    $this->httpServer->decrementConnection();
+  }  
+
+  private function readyNoBlocking(
   ): void {
     @stream_set_blocking(
       $this->streamSocketAccept,
@@ -52,7 +99,7 @@ class AcceptClient
     );    
   }
 
-  public function closeRequest(
+  public function readyClose(
   ): void {
     fflush($this->streamSocketAccept);
     fclose($this->streamSocketAccept);
@@ -60,25 +107,19 @@ class AcceptClient
 
   public function ready(
   ): void {
-    if ($this->streamSocketAccept) {
-      if ($this->httpServer->isConnectionExceded()) {
-        // TD para retorno de error Service Unavailable
-        echo "Connection exceded\n";
+    if($this->readyAccept()){
+      if(!$this->readyIsMaxExceded()){
+        $this->readyRequest();
+        $this->readyErrror();
+        $this->readyClose();
       } else {
-        $this->httpServer->incrementConnection();
+        $this->readyInc();
         $this->readyNoBlocking();
         $this->readyRequest();
         $this->readyRequestLog();
-
-        $this->response->json(
-          value: [
-            "success" => true,
-            "content" => $this->request->query
-          ]
-        );        
-
-        $this->closeRequest();
-        $this->httpServer->decrementConnection();
+        $this->readyRequestSend();
+        $this->readyClose();
+        $this->readyDec();
       }
     }
   }

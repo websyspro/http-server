@@ -25,12 +25,11 @@ const httpRequestTest = async () => {
     const { success, content } = await response.json();
 
     if( success === true && content.uuid === uuid ){
-      return { success: success, time: responseTime };      
+      return { success: true, time: responseTime };      
     } else {
-      return { success: success, time: responseTime };      
+      return { success: false, time: responseTime };      
     }
   } catch (error) {
-    console.log('Error:', error);
     return {
       success: false,
       time: 0,

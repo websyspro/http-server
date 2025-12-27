@@ -2,7 +2,7 @@
 
 namespace Websyspro;
 
-use Websyspro\Commons\DataList;
+use Websyspro\Commons\Collection;
 
 class Request
 {
@@ -113,21 +113,22 @@ class Request
 
   private function formData(
   ): void {
-    $formDataItems = array_map(
-      fn(string $formData): FileFormData|TextFormData => (
-        $this->formdDataDecode( $formData)
-      ), $this->formDataToList()
+    $formDataItems = new Collection(
+      $this->formDataToList()
     );
 
-    array_map(
-      function( FileFormData|TextFormData $formData) {
-        if( $formData instanceof FileFormData ) {
+    $formDataItems
+      ->mapper(fn(string $formData): FileFormData|TextFormData => (
+        $this->formdDataDecode( $formData)
+      ))
+      ->mapper(function(FileFormData|TextFormData $formData) {
+        if( $formData instanceof FileFormData ){
           $this->files[$formData->getKey()] = $formData;
-        } else if( $formData instanceof TextFormData ) {
+        } else 
+        if( $formData instanceof TextFormData ) {
           $this->body[$formData->getKey()] = $formData->value;
         }
-      }, $formDataItems
-    );
+      });
   }
 
   private function urlEncode(

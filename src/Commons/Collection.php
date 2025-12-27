@@ -35,16 +35,16 @@ class Collection
   }
 
   public function mapper(
-    callable|object $callableOrObject
+    callable|object $callback
   ): Collection {
-    if(is_callable( $callableOrObject ) === false){
+    if(is_callable( $callback ) === false){
       // TODO:: mapper
       return new Collection();
     }
 
     return new Collection(
       Utils::mapper(
-        $this->items, $callableOrObject
+        $this->items, $callback
       )
     );
   }
@@ -102,6 +102,11 @@ class Collection
   ): string {
     return $this->Join("");
   }
+
+  public function joinWithBreak(
+  ): string {
+    return $this->Join( "\r\n" );
+  }  
 
   public function count(
   ): int {

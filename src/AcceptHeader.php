@@ -90,7 +90,8 @@ class AcceptHeader
         break;
       }
 
-      $this->propertys["ContentBody"] .= $chunkReceived;
+      $this->propertys["ContentBody"] = "";
+      $this->propertys["ContentBody"].= $chunkReceived;
       $this->packetsReceived += strlen( $chunkReceived );
     }
   }

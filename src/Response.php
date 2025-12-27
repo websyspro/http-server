@@ -2,6 +2,8 @@
 
 namespace Websyspro;
 
+use Websyspro\Commons\Collection;
+
 class Response
 {
   private int $code = 200;
@@ -14,17 +16,15 @@ class Response
     string $contentType,
     mixed $contentData,
   ): string {
-    return implode(
-      "\r\n",
+    return new Collection(
       [
         "HTTP/1.1 {$this->code}",
         "Content-Type: {$contentType}",
-        "Content-Length: " . strlen( $contentData ),
-        "Connection: close",
-        "",
+        "Content-Length: " . strlen($contentData),
+        "Connection: close", "",
         "{$contentData}"
       ]
-    );
+    )->joinWithBreak();
   }
 
   public function status(
@@ -35,14 +35,14 @@ class Response
   }
 
   public function json(
-    mixed $value
+    mixed $json
   ): void {
     fwrite(
       $this->streamSocketAccept, 
       $this->data(
         "application/json",
         json_encode(
-          $value
+          $json
         )
       )
     );    

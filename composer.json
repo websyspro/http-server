@@ -15,8 +15,6 @@
     }
   ],
   "require-dev": {
-    "websyspro/logger": "dev-main",
-    "websyspro/common": "dev-main",
     "websyspro/watch": "dev-main"
   },
   "scripts": {
