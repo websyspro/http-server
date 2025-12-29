@@ -8,8 +8,9 @@ use Exception;
 
 abstract class UtilServer
 {
-  private bool $running = true;
+  private string $base;
   private int $port;
+  private bool $running = true;
   private mixed $streamSocket;
   private string|null $errno = null;
   private string|null $error = null;
@@ -119,7 +120,13 @@ abstract class UtilServer
         }
       }
     }
-  }  
+  }
+
+  public function base(
+    string $base
+  ): void {
+    $this->base = $base;
+  } 
 
   public function listen(
     int $port
