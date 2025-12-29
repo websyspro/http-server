@@ -10,6 +10,7 @@ use Websyspro\Decorations\Server\Body;
 use Websyspro\Decorations\Server\Get;
 use Websyspro\Exceptions\Error;
 use Websyspro\HttpServer;
+use Websyspro\Request;
 
 #[Controller("user")]
 #[Authenticate()]
@@ -43,8 +44,9 @@ class PerfilController
 
   #[Post("list/products")]
   public function products(    
-  ): array {
-    return [ "key" => "Exmplo de produtos" ];
+    Request $request
+  ): object {
+    return $request->body;
   }
   
   #[Post("list/find/products")]

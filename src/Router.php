@@ -90,7 +90,7 @@ class Router
         call_user_func_array(
           [ 
             new $class, $method
-          ], []
+          ], [ $request ]
         )
       );
     } else {

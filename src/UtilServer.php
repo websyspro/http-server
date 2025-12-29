@@ -286,8 +286,8 @@ abstract class UtilServer
   }  
 
   public function getBase(
-  ): string {
-    return $this->base;
+  ): string|null {
+    return $this->base ?? null;
   }  
 
   public function base(
