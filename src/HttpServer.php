@@ -17,49 +17,49 @@ extends UtilServer
     string $path,
     callable|null $fn = null
   ) : void {
-    $this->add( MethodType::GET, $path, $fn );
+    $this->addEndPoint( MethodType::GET, $path, $fn );
   }
 
   public function post(
     string $path,
     callable|null $fn = null
   ) : void {
-    $this->add( MethodType::POST, $path, $fn );
+    $this->addEndPoint( MethodType::POST, $path, $fn );
   }
 
   public function put(
     string $path,
     callable|null $fn = null
   ) : void {
-    $this->add( MethodType::PUT, $path, $fn );
+    $this->addEndPoint( MethodType::PUT, $path, $fn );
   }
 
   public function patch(
     string $path,
     callable|null $fn = null
   ) : void {
-    $this->add( MethodType::PATCH, $path, $fn );
+    $this->addEndPoint( MethodType::PATCH, $path, $fn );
   }
 
   public function delete(
     string $path,
     callable|null $fn = null
   ) : void {
-    $this->add( MethodType::DELETE, $path, $fn );
+    $this->addEndPoint( MethodType::DELETE, $path, $fn );
   }
 
   public function head(
     string $path,
     callable|null $fn = null
   ) : void {
-    $this->add( MethodType::HEAD, $path, $fn );
+    $this->addEndPoint( MethodType::HEAD, $path, $fn );
   }
 
   public function options(
     string $path,
     callable|null $fn = null
   ) : void {
-    $this->add( MethodType::OPTIONS, $path, $fn );
+    $this->addEndPoint( MethodType::OPTIONS, $path, $fn );
   }
 
   public function factory(

@@ -43,7 +43,7 @@ class PerfilController
   #[Post("list/products")]
   public function products(    
   ): array {
-    return [];
+    return [ "key" => "Exmplo de produtos" ];
   }
   
   #[Post("list/find/products")]

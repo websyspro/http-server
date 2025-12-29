@@ -140,14 +140,18 @@ abstract class UtilServer
     return $this->routers;
   }
 
-  public function add(
+  public function addEndPoint(
     MethodType $requestMethod,
     string $requestPath, callable|array $fn
   ): void {
     $this->routers->add(
       new Router(
         $requestMethod, 
-        $requestPath, $fn
+        preg_replace(
+          "#^/#", 
+          "", 
+          "{$this->getBase()}/{$requestPath}"
+        ), $fn
       )
     );
   }  
@@ -184,13 +188,13 @@ abstract class UtilServer
   ): void {
     Log::message(
       LogType::controller,
-      sprintf("Map Route {%s, %s}", ...[
+      sprintf("Map Route %s -> %s", ...[
         $structureRoute->methodType->name,
         $structureRoute->getEndPoint()
       ])
     );
 
-    $this->add( 
+    $this->addEndPoint( 
       $structureRoute->methodType, 
       sprintf(
         "%s/%s/%s", ...[
@@ -201,13 +205,7 @@ abstract class UtilServer
           $this->getPrefixFromClass(
             "#(Controller)|(controller)$#", 
             $structureRoute->reflect->class
-          ), sprintf(
-            "%s/%s", 
-            [ 
-              $this->getBase(),
-              $structureRoute->getEndPoint()
-            ]
-          )
+          ), $structureRoute->getEndPoint()
         ]
       ), [ $structureRoute->reflect->class, $structureRoute->reflect->name ]
     );    
