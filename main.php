@@ -39,7 +39,7 @@ class PerfilController
   public function all(
     Request $request
   ): array {
-    return [ "....." ];
+    return [ ".....TTTTT....." ];
   }
 
   #[Post("list/products")]

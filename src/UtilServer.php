@@ -195,7 +195,7 @@ abstract class UtilServer
   ): void {
     Log::message(
       LogType::controller,
-      sprintf("Map Route %s -> %s", ...[
+      sprintf("Map Route %s %s", ...[
         $structureRoute->methodType->name,
         $structureRoute->getEndPoint()
       ])
