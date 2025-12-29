@@ -1,6 +1,6 @@
 <?php
 
-namespace Websyspro\Core\Decorations\Server;
+namespace Websyspro\Decorations;
 
 use Attribute;
 use Websyspro\Enums\ControllerType;

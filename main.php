@@ -4,6 +4,60 @@ use Websyspro\HttpServer;
 use Websyspro\Request;
 use Websyspro\Response;
 
+#[Controller("user")]
+#[Authenticate()]
+class UserController
+{
+  public function __construct(
+  ){}
+
+  #[Post("{testId:bool}/details")]
+  #[AllowAnonymous()]
+  public function all(  
+    #[Body()] array $testId
+  ): Response {
+    //Error::unauthorized("badRequest");
+    return Response::json(
+      $testId
+    );
+  }
+}
+
+#[Controller("perfils")]
+#[Authenticate()]
+#[FileValidade()]
+class PerfilController
+{
+  public function __construct(
+  ){}
+
+  #[Get("list/get/{productId}")]
+  public function all(
+  ): array {
+    return [];
+  }
+
+  #[Post("list/products")]
+  public function products(    
+  ): array {
+    return [];
+  }
+  
+  #[Post("list/find/products")]
+  public function findProduct(
+  ): Response {
+    return Response::json("teste");
+  }
+}
+
+#[Module(
+  controllers: [
+    UserController::class,
+    PerfilController::class
+  ]
+)]
+class AccountsModule {}
+
 $httpServer = new HttpServer();
 $httpServer->factory( 
   []
