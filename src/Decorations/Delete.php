@@ -2,7 +2,7 @@
 
 namespace Websyspro\Core\Decorations\Server;
 
-use WebsysproDecorations\AbstractEndpoint;
+use Websyspro\Decorations\AbstractEndpoint;
 use Websyspro\Enums\ControllerType;
 use Websyspro\Enums\MethodType;
 use Attribute;
