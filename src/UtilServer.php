@@ -5,9 +5,15 @@ namespace Websyspro;
 use Websyspro\Logger\Enums\LogType;
 use Websyspro\Logger\Log;
 use Exception;
+use ReflectionAttribute;
+use ReflectionClass;
+use Websyspro\Commons\Collection;
+use Websyspro\Decorations\Server\Module;
+use Websyspro\Enums\MethodType;
 
 abstract class UtilServer
 {
+  private array $modules;
   private string $base;
   private int $port;
   private bool $running = true;
@@ -16,6 +22,13 @@ abstract class UtilServer
   private string|null $error = null;
   private int $socketConnections = 0;
   private int $socketMaxConnections = 500;
+
+  private Collection $routers;
+
+  public function __construct(
+  ){
+    $this->routers = new Collection([]);
+  }  
 
   private function streamSetBlocking(
   ): void {
@@ -122,6 +135,156 @@ abstract class UtilServer
     }
   }
 
+  public function getRouters(
+  ): Collection {
+    return $this->routers;
+  }
+
+  public function add(
+    MethodType $requestMethod,
+    string $requestPath, callable|array $fn
+  ): void {
+    $this->routers->add(
+      new Router(
+        $requestMethod, 
+        $requestPath, $fn
+      )
+    );
+  }  
+
+  public function setModules(
+    array $modules
+  ): void {
+    $this->modules = $modules;
+  }
+
+  public function getModules(
+  ): Collection {
+    return new Collection(
+      $this->modules
+    );
+  } 
+  
+  private function getPrefixFromClass(
+    string $pattern,
+    string $class
+  ): string {
+    return preg_replace(
+      $pattern,
+      "", 
+      strtolower(
+        $class
+      )
+    );   
+  }
+
+  private function factoryReadyEndpointsControllerInModule(
+    StructureRoute $structureRoute,
+    string $module
+  ): void {
+    Log::message(
+      LogType::controller,
+      sprintf("Map Route {%s, %s}", ...[
+        $structureRoute->methodType->name,
+        $structureRoute->getEndPoint()
+      ])
+    );
+
+    $this->add( 
+      $structureRoute->methodType, 
+      sprintf(
+        "%s/%s/%s", ...[
+          $this->getPrefixFromClass(
+            "#(Module)|(module)$#",
+            $module
+          ),
+          $this->getPrefixFromClass(
+            "#(Controller)|(controller)$#", 
+            $structureRoute->reflect->class
+          ), sprintf(
+            "%s/%s", 
+            [ 
+              $this->getBase(),
+              $structureRoute->getEndPoint()
+            ]
+          )
+        ]
+      ), [ $structureRoute->reflect->class, $structureRoute->reflect->name ]
+    );    
+  }
+
+  private function factoryReadyControllerInModule(
+    StructureController $structureController,
+    string $module
+  ): void {
+    Log::message(
+      LogType::controller, 
+      "Map Controllers {$structureController->reflect->name}"
+    );
+
+    $structureController->endpoints->mapper(
+      fn( StructureRoute $structureRoute ) => (
+        $this->factoryReadyEndpointsControllerInModule(
+          $structureRoute, $module
+        )
+      )
+    );
+  }
+
+  private function factoryReadyModule(
+    string $module,
+  ): void {
+    [ $reflectAttribute ] = new ReflectionClass(
+      $module
+    )->getAttributes();
+
+    if( $reflectAttribute instanceof ReflectionAttribute ){
+      $moduleFromInstance = $reflectAttribute->newInstance();
+
+      Log::message(
+        LogType::module, 
+        "Map Module [{$module}]"
+      );
+
+      if($moduleFromInstance instanceof Module){
+        $controllersFromModule = new Collection( 
+          $moduleFromInstance->controllers
+        );
+
+        $controllersFromModule->mapper(
+          fn(string $controller) => (
+            $this->factoryReadyControllerInModule(
+              new StructureController(
+                new ReflectionClass( $controller)
+              ), $module
+            )
+          )
+        );
+      }
+    }
+  }
+
+  private function factoryReady(
+  ): void {
+    $this->getModules()->mapper(
+      fn(string $module) => (
+        $this->factoryReadyModule(
+          $module
+        )
+      )
+    );
+  }
+
+  public function startFactory(
+  ): void {
+    $this->factoryReady();
+  }  
+
+  public function getBase(
+  ): string {
+    return $this->base;
+  }  
+
   public function base(
     string $base
   ): void {
@@ -133,6 +296,7 @@ abstract class UtilServer
   ): void {
     $this->port = $port;
     $this->startShutdown();
+    $this->startFactory();
     $this->start();
   }
 }

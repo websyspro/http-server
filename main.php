@@ -63,10 +63,10 @@ class AccountsModule {}
 
 $httpServer = new HttpServer();
 $httpServer->factory( 
-  [
-    AccountsModule::class
-  ]
-);
+    [
+        AccountsModule::class
+        ]
+    );
 $httpServer->base( "api/v1" );
 $httpServer->listen( 3002 );
 
