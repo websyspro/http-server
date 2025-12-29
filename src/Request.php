@@ -9,6 +9,7 @@ class Request
   public mixed $body = [];
   public mixed $files = [];
   public mixed $query = [];
+  public mixed $params = [];
 
   public function __construct(
     private AcceptHeader $acceptHeader   

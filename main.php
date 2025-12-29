@@ -1,15 +1,12 @@
 <?php
 
-use Websyspro\Commons\Utils;
 use Websyspro\HttpServer;
 use Websyspro\Request;
 use Websyspro\Response;
 
 $httpServer = new HttpServer();
-$httpServer->factory(
-	/*
-	 * Aqui o module Main
-	 * **/
+$httpServer->factory( 
+  []
 );
 
 $httpServer->post( "/", function(Response $res, Request $req) {
