@@ -8,6 +8,7 @@ use Websyspro\Decorations\Server\Module;
 use Websyspro\Decorations\Server\Post;
 use Websyspro\Decorations\Server\Body;
 use Websyspro\Decorations\Server\Get;
+use Websyspro\Exceptions\Error;
 use Websyspro\HttpServer;
 
 #[Controller("user")]
@@ -63,10 +64,11 @@ class AccountsModule {}
 
 $httpServer = new HttpServer();
 $httpServer->factory( 
-    [
-        AccountsModule::class
-        ]
-    );
+  [
+    AccountsModule::class
+  ]
+);
+
 $httpServer->base( "api/v1" );
 $httpServer->listen( 3002 );
 

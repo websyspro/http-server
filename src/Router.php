@@ -84,12 +84,15 @@ class Router
     Response $response,
     Request $request  
   ): void {
-    if(is_array($this->fn)){
+    if( is_array($this->fn) ){
       [ $class, $method ] = $this->fn;
-
-      $response->status(200)->json([
-        call_user_func_array([ new $class, $method], [])
-      ]);
+      $response->status(200)->json(
+        call_user_func_array(
+          [ 
+            new $class, $method
+          ], []
+        )
+      );
     } else {
       if( is_callable( $this->fn )){
         call_user_func( $this->fn, ...[ $response, $request ]);

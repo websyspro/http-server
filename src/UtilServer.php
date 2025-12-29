@@ -28,7 +28,12 @@ abstract class UtilServer
   public function __construct(
   ){
     $this->routers = new Collection([]);
-  }  
+  }
+  
+  private function usLeep(
+  ): void {
+    usleep(1000);
+  }
 
   private function streamSetBlocking(
   ): void {
@@ -87,6 +92,8 @@ abstract class UtilServer
           $this->httpServer(), 
           $this->streamSocketAccept()
         );
+
+        $this->usLeep();
       } catch (Exception $error) {
         throw new Exception(
           $error

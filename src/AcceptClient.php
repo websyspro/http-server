@@ -48,9 +48,7 @@ class AcceptClient
         $this->acceptHeader->requestUrl(),
         $this->acceptHeader->requestUrlSeparator(),
         $this->acceptHeader->requestUrlQuery(),
-      ]),
-      $this->detailClient->getIp(),
-      $this->detailClient->getPort()
+      ])
     );
   }
 
@@ -67,9 +65,7 @@ class AcceptClient
 
     Log::error(
       LogType::service,
-      $messageLog ?? $message,
-      $this->detailClient->getIp(),
-      $this->detailClient->getPort()
+      $messageLog ?? $message
     );    
   }
 
