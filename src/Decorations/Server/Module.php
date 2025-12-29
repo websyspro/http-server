@@ -1,9 +1,8 @@
 <?php
 
-namespace Websyspro\Decorations;
+namespace Websyspro\Decorations\Server;
 
 use Attribute;
-use Websyspro\Core\Commons\Collection;
 
 #[Attribute(Attribute::TARGET_CLASS)]
 class Module

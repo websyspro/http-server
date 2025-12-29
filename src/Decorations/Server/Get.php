@@ -1,11 +1,11 @@
 <?php
 
-namespace Websyspro\Decorations;
+namespace Websyspro\Decorations\Server;
 
-use Attribute;
+
 use Websyspro\Enums\ControllerType;
 use Websyspro\Enums\MethodType;
-use Websyspro\Decorations\AbstractEndpoint;
+use Attribute;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 class Get extends AbstractEndpoint

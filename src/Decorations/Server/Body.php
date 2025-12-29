@@ -1,13 +1,13 @@
 <?php
 
-namespace Websyspro\Decorations;
+namespace Websyspro\Decorations\Server;
 
 use Websyspro\Enums\ControllerType;
 use Websyspro\Request;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-class File extends AbstractParameter
+class Body extends AbstractParameter
 {
   public ControllerType $controllerType = ControllerType::Parameter;
 
@@ -20,7 +20,7 @@ class File extends AbstractParameter
     string $instanceType
   ): mixed {
     return $this->getValue(
-      $request->files, 
+      $request->body, 
       $instanceType, 
       $this->key
     );

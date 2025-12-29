@@ -1,5 +1,13 @@
 <?php
 
+use Websyspro\Decorations\AllowAnonymous;
+use Websyspro\Decorations\Authenticate;
+use Websyspro\Decorations\Body;
+use Websyspro\Decorations\Controller;
+use Websyspro\Decorations\FileValidade;
+use Websyspro\Decorations\Get;
+use Websyspro\Decorations\Module;
+use Websyspro\Decorations\Post;
 use Websyspro\HttpServer;
 use Websyspro\Request;
 use Websyspro\Response;
@@ -15,11 +23,8 @@ class UserController
   #[AllowAnonymous()]
   public function all(  
     #[Body()] array $testId
-  ): Response {
-    //Error::unauthorized("badRequest");
-    return Response::json(
-      $testId
-    );
+  ): array {
+    return [];
   }
 }
 
@@ -45,8 +50,8 @@ class PerfilController
   
   #[Post("list/find/products")]
   public function findProduct(
-  ): Response {
-    return Response::json("teste");
+  ): array {
+    return ["teste"];
   }
 }
 
@@ -60,7 +65,9 @@ class AccountsModule {}
 
 $httpServer = new HttpServer();
 $httpServer->factory( 
-  []
+  [
+    AccountsModule::class
+  ]
 );
 
 $httpServer->post( "/", function(Response $res, Request $req) {

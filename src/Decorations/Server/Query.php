@@ -1,13 +1,13 @@
 <?php
 
-namespace Websyspro\Decorations;
+namespace Websyspro\Decorations\Server;
 
 use Websyspro\Enums\ControllerType;
 use Websyspro\Request;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-class Param extends AbstractParameter
+class Query extends AbstractParameter
 {
   public ControllerType $controllerType = ControllerType::Parameter;
 
@@ -20,7 +20,7 @@ class Param extends AbstractParameter
     string $instanceType
   ): mixed {
     return $this->getValue(
-      $request->params, 
+      $request->query, 
       $instanceType, 
       $this->key
     );
