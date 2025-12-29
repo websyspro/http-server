@@ -62,7 +62,7 @@ class Request
     }
   }  
   
-  private function bodyDecode(
+  private function setBodyFromJsonDecode(
   ): void {
     $this->body = json_decode(
       $this->acceptHeader->contentBody()
@@ -111,7 +111,7 @@ class Request
     );
   }
 
-  private function formData(
+  private function setBodyFromFormData(
   ): void {
     $formDataItems = new Collection(
       $this->formDataToList()
@@ -131,7 +131,7 @@ class Request
       });
   }
 
-  private function urlEncode(
+  private function setBodyFromUrlEncode(
   ): void {
     parse_str( 
       $this->acceptHeader->contentBody(), 
@@ -144,13 +144,13 @@ class Request
     $this->queryDecode();
 
     if($this->isApplicationJson()){
-      $this->bodyDecode(); 
+      $this->setBodyFromJsonDecode(); 
     } else
     if($this->isMultipartFormData()){
-      $this->formData();
+      $this->setBodyFromFormData();
     } else
     if($this->isFormUrlEncoded()){
-      $this->urlEncode();
+      $this->setBodyFromUrlEncode();
     }
   }
 }

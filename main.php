@@ -13,7 +13,7 @@ $httpServer->factory(
 );
 
 $httpServer->post( "/", function(Response $res, Request $req) {
-	$res->status( 200 )->json( Utils::generationUuid() );
+	$res->status( 200 )->json( $req->body );
 });
 
 $httpServer->get( "/users", function(Response $res, Request $req) {

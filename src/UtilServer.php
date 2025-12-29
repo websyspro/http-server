@@ -6,7 +6,7 @@ use Websyspro\Logger\Enums\LogType;
 use Websyspro\Logger\Log;
 use Exception;
 
-abstract class ExpressServer
+abstract class UtilServer
 {
   private bool $running = true;
   private int $port;
@@ -25,7 +25,7 @@ abstract class ExpressServer
   }
 
   private function httpServer(
-  ): ExpressServer {
+  ): UtilServer {
     return $this;
   }
   

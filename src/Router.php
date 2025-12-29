@@ -34,16 +34,10 @@ class Router
     );
   }
 
-  public function equalRequestUrl(
-    string $requestUrl
+  private function equalRequestUrlValid(
+    Collection $requestUrlRouter,
+    Collection $requestUrlHeader,
   ): bool {
-    $requestUrlRouter = $this->createPaths();
-    $requestUrlHeader = $this->createPaths( $requestUrl );
-
-    if($requestUrlRouter->count() !== $requestUrlHeader->count()){
-      return false;
-    }
-
     return $requestUrlRouter
       ->mapper(
         function(string $path, int $index) use($requestUrlHeader) {
@@ -60,6 +54,22 @@ class Router
             ->eq($index)->first();
         }
       )->where(fn(bool $val) => $val === false)->exist() === false;
+  }
+
+  public function equalRequestUrl(
+    string $requestUrl
+  ): bool {
+    $requestUrlRouter = $this->createPaths();
+    $requestUrlHeader = $this->createPaths( $requestUrl );
+
+    if($requestUrlRouter->count() !== $requestUrlHeader->count()){
+      return false;
+    }
+
+    return $this->equalRequestUrlValid(
+      $requestUrlRouter,
+      $requestUrlHeader
+    );
   }
 
   public function isValid(
