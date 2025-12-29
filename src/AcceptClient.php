@@ -3,9 +3,9 @@
 namespace Websyspro;
 
 use Websyspro\Logger\Enums\LogType;
+use Websyspro\Exceptions\Error;
 use Websyspro\Logger\Log;
 use Exception;
-use Websyspro\Exceptions\Error;
 
 class AcceptClient
 {

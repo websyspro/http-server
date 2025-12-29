@@ -3,12 +3,12 @@
 namespace Websyspro;
 
 use Websyspro\Commons\Collection;
-use Websyspro\Enums\RequestMethod;
+use Websyspro\Enums\MethodType;
 
 class Router
 {
   public function __construct(
-    private RequestMethod $requestMethod,
+    private MethodType $requestMethod,
     private string $requestUrl,
     private mixed $fn
   ){}

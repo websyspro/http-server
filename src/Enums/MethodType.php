@@ -2,7 +2,7 @@
 
 namespace Websyspro\Enums;
 
-enum RequestMethod
+enum MethodType
 {
 	case GET;
 	case POST;
