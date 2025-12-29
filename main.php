@@ -8,7 +8,6 @@ use Websyspro\Decorations\Server\Module;
 use Websyspro\Decorations\Server\Post;
 use Websyspro\Decorations\Server\Body;
 use Websyspro\Decorations\Server\Get;
-use Websyspro\Exceptions\Error;
 use Websyspro\HttpServer;
 use Websyspro\Request;
 
@@ -38,8 +37,9 @@ class PerfilController
 
   #[Get("list/get/{productId}")]
   public function all(
+    Request $request
   ): array {
-    return [];
+    return [ "....." ];
   }
 
   #[Post("list/products")]
