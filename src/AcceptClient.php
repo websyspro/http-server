@@ -100,6 +100,36 @@ class AcceptClient
         $message
       );
     }
+  }
+
+  private function getAcceptClient(
+  ): AcceptClient {
+    return $this;
+  }  
+
+  private function getAcceptHeader(
+  ): AcceptHeader {
+    return $this->acceptHeader;
+  }
+
+  public function getResponse(
+  ): Response {
+    return $this->getAcceptClient()->response;
+  }
+
+  public function getRequest(
+  ): Request {
+    return $this->getAcceptClient()->request;
+  }  
+  
+  private function requestMethod(
+  ): string {
+    return $this->getAcceptHeader()->requestMethod();
+  }
+
+  private function requestUrl(
+  ): string {
+    return $this->getAcceptHeader()->requestUrl();
   }  
 
   private function readyRequestSend(
@@ -107,22 +137,23 @@ class AcceptClient
     $routers = $this->httpServer->getRouters()
       ->where(fn(Router $router) => (
         $router->isValid(
-          $this->acceptHeader->requestMethod(), 
-          $this->acceptHeader->requestUrl(),
+          $this->requestMethod(), 
+          $this->requestUrl(),
         )
       ));
 
-    if($routers->exist() === false ){
+    if( $routers->exist() === false ){
       Error::notFound( "Controller not found" );
     }
 
-    if($routers->first() instanceof Router) {
-      $routers->first()->execute(
-        $this->response,
-        $this->request
+    [ $router ] = $routers->all();
+    if($router instanceof Router) {
+      $router->execute(
+        $this->getAcceptClient(),
+        $this->getAcceptHeader()
       );
     } else {
-      $this->response->json(
+      $this->getResponse()->json(
         $this->request->query
       );
     }

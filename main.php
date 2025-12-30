@@ -5,6 +5,7 @@ use Websyspro\Decorations\Server\FileValidade;
 use Websyspro\Decorations\Server\Authenticate;
 use Websyspro\Decorations\Server\Controller;
 use Websyspro\Decorations\Server\Module;
+use Websyspro\Decorations\Server\Param;
 use Websyspro\Decorations\Server\Post;
 use Websyspro\Decorations\Server\Body;
 use Websyspro\Decorations\Server\Get;
@@ -37,9 +38,9 @@ class PerfilController
 
   #[Get("list/get/{productId}")]
   public function all(
-    Request $request
-  ): array {
-    return [ ".....TTTTT....." ];
+    #[Param()] string $productId
+  ): string {
+    return $productId;
   }
 
   #[Post("list/products")]

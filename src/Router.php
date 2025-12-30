@@ -128,8 +128,8 @@ class Router
   }
 
   public function executeFromFactory(
-    Response $response,
-    Request $request  
+    AcceptClient $acceptClient,
+    AcceptHeader $acceptHeader    
   ): void {
     try {
       [ $this->class, $this->name 
@@ -137,18 +137,20 @@ class Router
 
       $this->getMiddlewares()->mapper(
         fn(object $middleware): mixed => (
-          $middleware->execute($request)
+          $middleware->execute( $acceptClient->getRequest())
         )
       );
 
-      $response->status( 200 )->json(
+      $acceptClient->getResponse()->status(
+        Response::HTTP_OK
+      )->json(
         call_user_func_array(
           [ 
             InstanceDI::getInstance(
               $this->class
             ), $this->name 
           ], $this->getParameters(
-            $request
+            $acceptClient->getRequest()
           )->all()
         )
       );
@@ -160,13 +162,16 @@ class Router
   }
 
   private function executeFromFN(
-    Response $response,
-    Request $request
+    AcceptClient $acceptClient,
+    AcceptHeader $acceptHeader
   ): void {
     try {
-      call_user_func( $this->fn, ...[ 
-        $response, $request
-      ]);
+      call_user_func(
+        $this->fn, ...[ 
+          $acceptClient->getResponse(),
+          $acceptClient->getRequest()
+        ]
+      );
     } catch( Exception $error ){
       Error::internalServerError(
         $error->getMessage()
@@ -175,11 +180,11 @@ class Router
   }
 
   public function execute(
-    Response $response,
-    Request $request  
+    AcceptClient $acceptClient,
+    AcceptHeader $acceptHeader
   ): void {
     Utils::isArray( $this->fn )
-     ? $this->executeFromFactory( $response, $request )
-     : $this->executeFromFN( $response, $request );
+     ? $this->executeFromFactory( $acceptClient, $acceptHeader )
+     : $this->executeFromFN( $acceptClient, $acceptHeader );
   }
 }
