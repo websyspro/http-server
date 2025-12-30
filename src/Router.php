@@ -86,9 +86,16 @@ class Router
   }
 
   public function isValid(
-    string $requestMethod,
-    string $requestUrl
+    string|null $requestMethod,
+    string|null $requestUrl
   ): bool {
+    $hasRequestMethod = Utils::isNull( $requestMethod);
+    $hasRequestUrl = Utils::isNull( $requestUrl);
+
+    if($hasRequestMethod || $hasRequestUrl){
+      return false;
+    }
+
     return $this->equalRequestMethod( $requestMethod )
         && $this->equalRequestUrl( $requestUrl );
   }

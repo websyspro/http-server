@@ -38,12 +38,10 @@ class AcceptClient
     Log::message(
       LogType::service, 
       sprintf(
-        "[%s] %s %s%s%s",  ...[
-          $this->acceptHeader->protocolVersion(),
-          $this->acceptHeader->requestMethod(),
-          $this->acceptHeader->requestUrl(),
-          $this->acceptHeader->requestUrlSeparator(),
-          $this->acceptHeader->requestUrlQuery(),
+        "[%s] %s %s",  ...[
+          $this->acceptHeader->getProtocolVersion(),
+          $this->acceptHeader->getRequestMethod(),
+          $this->acceptHeader->getRequestUrl()
         ]
       )
     );
@@ -102,11 +100,6 @@ class AcceptClient
     return $this;
   }  
 
-  private function getAcceptHeader(
-  ): AcceptHeader {
-    return $this->acceptHeader;
-  }
-
   public function getResponse(
   ): Response {
     return $this->getAcceptClient()->response;
@@ -117,23 +110,13 @@ class AcceptClient
     return $this->getAcceptClient()->request;
   }  
   
-  private function requestMethod(
-  ): string {
-    return $this->getAcceptHeader()->requestMethod();
-  }
-
-  private function requestUrl(
-  ): string {
-    return $this->getAcceptHeader()->requestUrl();
-  }  
-
   private function readyRequestSend(
   ): void {
     $routers = $this->httpServer->getRouters()
       ->where(fn(Router $router) => (
         $router->isValid(
-          $this->requestMethod(), 
-          $this->requestUrl(),
+          $this->acceptHeader->getRequestMethod(), 
+          $this->acceptHeader->getRequestUrl(),
         )
       ));
 
@@ -144,19 +127,14 @@ class AcceptClient
     [ $router ] = $routers->all();
     if($router instanceof Router) {
       $router->execute(
-        $this->getAcceptClient(),
-        $this->getAcceptHeader()
+        $this,
+        $this->acceptHeader
       );
     } else {
       $this->getResponse()->json(
         $this->request->query
       );
     }
-  }
-
-  private function readyAccept(
-  ): mixed {
-    return $this->streamSocketAccept;
   }
 
   private function readyIsMaxExceded(
@@ -191,21 +169,19 @@ class AcceptClient
   public function ready(
   ): void {
     try {
-      if( $this->readyAccept() ){
-        if( $this->readyIsMaxExceded()){
-          $this->readyRequest();
-          $this->readyRequestFail();
-          $this->readyClose();
-        } else {
-            $this->readyInc();
-            $this->readyNoBlocking();
-            $this->readyRequest();
-            $this->readyRequestLog();
-            $this->readyRequestSend();
-            $this->readyClose();
-            $this->readyDec();
-          }
-        }
+      if( $this->readyIsMaxExceded()){
+        $this->readyRequest();
+        $this->readyRequestFail();
+        $this->readyClose();
+      } else {
+        $this->readyInc();
+        $this->readyNoBlocking();
+        $this->readyRequest();
+        $this->readyRequestLog();
+        $this->readyRequestSend();
+        $this->readyClose();
+        $this->readyDec();
+      }
     } catch( Exception $error ){
       $this->readyInternalError(
         $error

@@ -5,7 +5,7 @@ namespace Websyspro;
 use Websyspro\Enums\MethodType;
 
 class HttpServer 
-extends UtilServer
+extends UtilsServer
 {
   public function get(
     string $path,

@@ -9,6 +9,12 @@ use stdClass;
 
 class Utils
 {
+  public static function existVar(
+    mixed $value
+  ): bool {
+    return isset($value);
+  }
+
   public static function getType(
     mixed $value
   ): string {

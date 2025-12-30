@@ -11,7 +11,7 @@ use Websyspro\Commons\Collection;
 use Websyspro\Decorations\Server\Module;
 use Websyspro\Enums\MethodType;
 
-abstract class UtilServer
+abstract class UtilsServer
 {
   private array $modules;
   private string $base;
@@ -29,11 +29,6 @@ abstract class UtilServer
   ){
     $this->routers = new Collection([]);
   }
-  
-  private function usLeep(
-  ): void {
-    usleep(1000);
-  }
 
   private function streamSetBlocking(
   ): void {
@@ -44,7 +39,7 @@ abstract class UtilServer
   }
 
   private function httpServer(
-  ): UtilServer {
+  ): UtilsServer {
     return $this;
   }
   
@@ -91,15 +86,13 @@ abstract class UtilServer
         [ $httpServer, $streamSocketAccept ] = [
           $this->httpServer(), $this->streamSocketAccept()
         ];
-
+        
         if( $streamSocketAccept ){
           new AcceptClient(
             $httpServer, 
             $streamSocketAccept
           );
         }
-
-        $this->usLeep();
       } catch (Exception $error) {
         throw new Exception(
           $error
