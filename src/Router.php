@@ -2,10 +2,10 @@
 
 namespace Websyspro;
 
-use ReflectionClass;
-use Websyspro\InstanceDependences;
 use Websyspro\Commons\Collection;
 use Websyspro\Enums\MethodType;
+use Websyspro\InstanceDI;
+use ReflectionClass;
 
 class Router
 {
@@ -134,16 +134,14 @@ class Router
 
       $this->getMiddlewares()->mapper(
         fn(object $middleware): mixed => (
-          $middleware->execute(
-            $request
-          )
+          $middleware->execute($request)
         )
       );
 
       $response->status( 200 )->json(
         call_user_func_array(
           [ 
-            InstanceDependences::getInstance(
+            InstanceDI::getInstance(
               $this->class
             ), $this->name 
           ], $this->getParameters( $request )->all()

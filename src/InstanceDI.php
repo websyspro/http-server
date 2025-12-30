@@ -6,7 +6,7 @@ use ReflectionClass;
 use ReflectionParameter;
 use Websyspro\Commons\Utils;
 
-class InstanceDependences
+class InstanceDI
 {
   public static function getInstance(
     string|object $class
@@ -16,7 +16,7 @@ class InstanceDependences
     );
 
     if($hasConstruct === true){
-      return InstanceDependences::gets($class);
+      return InstanceDI::gets($class);
     } else return new $class;
   }
 
@@ -43,7 +43,7 @@ class InstanceDependences
           $getParameters, (
             function( ReflectionParameter $reflectionParameter ) {
               if( $reflectionParameter->isDefaultValueAvailable() === false ){
-                return InstanceDependences::gets(
+                return InstanceDI::gets(
                   $reflectionParameter->getType()->getName()
                 );
               }
