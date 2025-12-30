@@ -95,31 +95,45 @@ abstract class UtilsHeader
       $this->propertys["ContentBody"].= $chunkReceived;
       $this->packetsReceived += strlen( $chunkReceived );
     }
-  }  
+  }
+  
+  private function isEstablished(
+  ): bool {
+    $read = [ $this->streamSocketAccept ];
+    $write = $except = [];
+
+    return stream_select(
+      $read,
+      $write, 
+      $except,
+      2
+    ) > 0;
+  }
 
   private function setReady(
   ): void {
-    $header = fgets(
-      $this->streamSocketAccept
-    );
-
-    if( $header ) {
-      $this->setReadyHeaderParse(
-        $header
+    if($this->isEstablished()){
+      $header = fgets(
+        $this->streamSocketAccept
       );
 
-      while(($header = fgets($this->streamSocketAccept)) !== false){
-        if((bool)preg_match( "#^\s*$#", $header ) === false){
-          $this->setReadyHeaderParse( $header );
+      if( $header ) {
+        $this->setReadyHeaderParse(
+          $header
+        );
+
+        while(($header = fgets($this->streamSocketAccept)) !== false){
+          if((bool)preg_match( "#^\s*$#", $header ) === false){
+            $this->setReadyHeaderParse( $header );
+          }
+
+          if($header === "\r\n"){
+            break;
+          }
         }
 
-        if($header === "\r\n"){
-          break;
-        }
+        $this->setReadyBody();
       }
-
-      $this->setReadyBody();
-      echo "Request Format: " . json_encode($this->propertys);
     }
   }
 
