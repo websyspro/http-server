@@ -110,7 +110,6 @@ class AcceptHeader
   ): void {
     $header = fgets( $this->streamSocketAccept);
     if( $header ) {
-      echo "header: " . $header . "\n";
       $this->readyParse( $header );
 
       while (($header = fgets($this->streamSocketAccept)) !== false) {

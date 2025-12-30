@@ -9,6 +9,7 @@ use Websyspro\Decorations\Server\Param;
 use Websyspro\Decorations\Server\Post;
 use Websyspro\Decorations\Server\Body;
 use Websyspro\Decorations\Server\Get;
+use Websyspro\Decorations\Server\Query;
 use Websyspro\HttpServer;
 
 #[Controller("user")]
@@ -25,6 +26,14 @@ class UserController
   ): array {
     return [];
   }
+
+  #[Get("test")]
+  #[AllowAnonymous()]
+  public function test(  
+    #[Query()] array $query
+  ): array {
+    return $query;
+  }  
 }
 
 #[Controller("perfils")]
