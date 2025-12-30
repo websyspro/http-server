@@ -89,12 +89,8 @@ extends UtilsHeader
   }
   
   public function isContent(): bool {
-    if(in_array($this->getRequestUrl(), $this->requestInvalids)){
-      return false;
-    }
-
     return Utils::sizeArray(
       $this->getPropertys()
-    ) !== 0 || $this->hasBlackListeRequest();
+    ) !== 0;// || $this->hasBlackListeRequest();
   }
 }

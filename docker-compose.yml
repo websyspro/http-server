@@ -1,0 +1,8 @@
+services:
+  php-server:
+    build: .
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/app
+    working_dir: /app

@@ -124,7 +124,7 @@ class AcceptClient
         ));
 
       if( $routers->exist() === false ){
-        Error::notFound( "Controller not found" );
+        Error::notFound( "Controller not found." );
       }
 
       [ $router ] = $routers->all();

@@ -104,6 +104,8 @@ abstract class UtilsServer
         [ $httpServer, $streamSocketAccept ] = [
           $this->httpServer(), $this->streamSocketAccept()
         ];
+
+        Log::message(LogType::service, "Service Loop");
         
         if( $streamSocketAccept ){
           $fork = $this->createFork();
@@ -120,6 +122,7 @@ abstract class UtilsServer
             );
 
             if($fork === 0){
+              Log::message(LogType::service, "Fork $fork criado com sucesso.");
               exit();
             }
           }
