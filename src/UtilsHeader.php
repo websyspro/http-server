@@ -106,7 +106,7 @@ abstract class UtilsHeader
       $read,
       $write, 
       $except,
-      2
+      1
     ) > 0;
   }
 
