@@ -6,10 +6,10 @@ use Websyspro\Commons\Collection;
 
 class Request
 {
-  public mixed $body = [];
-  public mixed $files = [];
-  public mixed $query = [];
-  public mixed $params = [];
+  public array|object|null $body = null;
+  public array|object|null $files = null;
+  public array|object|null $query = null;
+  public array|object|null $params = null;
 
   public function __construct(
     private AcceptHeader $acceptHeader   

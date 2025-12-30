@@ -9,10 +9,30 @@ use stdClass;
 
 class Utils
 {
+  public static function getType(
+    mixed $value
+  ): string {
+    return \gettype( $value );
+  }
+
+  public static function isObject(
+    mixed $object,
+  ): bool {
+    return \is_object( $object );
+  }
+
+  public static function isObjectEmpty(
+    mixed $object,
+  ): bool {
+    return Utils::sizeArray( 
+      get_object_vars( $object )
+    ) === 0;
+  }  
+
   public static function isArray(
     mixed $value
   ): bool {
-    return \is_array($value);
+    return \is_array( $value );
   }
 
   public static function sizeArray(
@@ -20,6 +40,18 @@ class Utils
   ): int {
     return \sizeof($array);
   }
+
+  public static function isNull(
+    mixed $value
+  ): bool {
+    return $value === null;
+  }
+
+  public static function isNotNull(
+    mixed $value
+  ): bool {
+    return $value !== null;
+  }  
 
   public static function generationUuid(
   ): string {
@@ -186,8 +218,8 @@ class Utils
     string $primitiveType
   ): bool {
     return in_array( $primitiveType, [
-      "int", "integer", "float", "double", 
-      "string", "bool", "boolean", "array", "null"
+      "int", "integer", "float", "double", "string",
+      "bool", "boolean", "array", "object", "null"
     ], true );
   }
   

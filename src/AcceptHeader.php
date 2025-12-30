@@ -25,8 +25,12 @@ class AcceptHeader
   }
 
   private function isQueryInUrl(): bool {
+    if (is_null($this->requestUrl())) {
+      return false;
+    }
+
     return preg_match(
-      "#\?#", $this->propertys["RequestUrl"]
+      "#\?#", $this->requestUrl()
     ) === 1;
   }
 

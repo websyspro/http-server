@@ -2,13 +2,15 @@
 
 namespace Websyspro;
 
-use Exception;
+use Websyspro\Decorations\Server\AllowAnonymous;
+use Websyspro\Decorations\Server\Authenticate;
 use Websyspro\Commons\Collection;
-use Websyspro\Commons\Utils;
 use Websyspro\Enums\MethodType;
 use Websyspro\Exceptions\Error;
+use Websyspro\Commons\Utils;
 use Websyspro\InstanceDI;
 use ReflectionClass;
+use Exception;
 
 class Router
 {

@@ -12,19 +12,19 @@ abstract class AbstractEndpoint
   public ControllerType $controllerType = ControllerType::Endpoint;
 
   public function __construct(
-    public string $endpoint
+    public string $route
   ){
-    $this->endpoint = preg_replace(
-      "#(^/)|(/$)#", "", $this->endpoint
+    $this->route = preg_replace(
+      "#(^/)|(/$)#", "", $this->route
     );
   }
 
-  public function getEndpoints(
+  public function getRoute(
   ): Collection {
     return new Collection(
       preg_split(
         "#/#",
-        $this->endpoint
+        $this->route
       )
     );
   }

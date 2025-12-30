@@ -35,10 +35,10 @@ class PerfilController
   public function __construct(
   ){}
 
-  #[Get("list/get/{productId}")]
+  #[Get("list/get/{productId:int}")]
   public function all(
-    #[Param()] string $productId
-  ): string {
+    #[Param("productId")] int $productId
+  ): int {
     return $productId;
   }
 
@@ -49,7 +49,7 @@ class PerfilController
     return $object;
   }
   
-  #[Post("list/find/products")]
+  #[Get("list/find/products")]
   public function findProduct(
   ): array {
     return ["teste"];
