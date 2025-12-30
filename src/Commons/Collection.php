@@ -19,15 +19,15 @@ class Collection
   }
 
   public function merge(
-    Collection|array $collectionOrArray 
+    Collection|array $array 
   ): Collection {
-    if($collectionOrArray instanceof Collection){
+    if($array instanceof Collection){
       $this->items = array_merge(
-        $this->items, $collectionOrArray->all()
+        $this->items, $array->all()
       );
     } else {
       $this->items = array_merge(
-        $this->items, $collectionOrArray
+        $this->items, $array
       );
     }
 

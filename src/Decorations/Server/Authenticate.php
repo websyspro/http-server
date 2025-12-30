@@ -3,6 +3,7 @@
 namespace Websyspro\Decorations\Server;
 
 use Websyspro\Enums\ControllerType;
+use Websyspro\Exceptions\Error;
 use Websyspro\Request;
 use Attribute;
 

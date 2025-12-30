@@ -2,6 +2,8 @@
 
 namespace Websyspro;
 
+use ReflectionClass;
+use Websyspro\InstanceDependences;
 use Websyspro\Commons\Collection;
 use Websyspro\Enums\MethodType;
 
@@ -80,23 +82,63 @@ class Router
         && $this->equalRequestUrl( $requestUrl );
   }
 
+  private function getMiddlewares(
+    string $class,
+    string $name
+  ): Collection {
+    $structureController = new StructureController(
+      new ReflectionClass(
+        $class
+      )
+    );
+
+    $structureRoute = $structureController->endpoints->find(
+      fn(StructureRoute $structureRoute): bool => (
+        $structureRoute->reflect->name === $name
+      ) 
+    );
+
+    return $structureController
+      ->getMiddlewares()
+      ->where(fn( object $middleware ): bool => (
+          ($middleware instanceof Authenticate) ? (
+            $structureRoute->getMiddlewares()->where(
+              fn(object $middleware) => (
+                $middleware instanceof AllowAnonymous
+              )
+            )->exist() === false
+          ) : true
+        ))
+      ->merge($structureRoute->getMiddlewares());
+  }  
+
   public function execute(
     Response $response,
     Request $request  
   ): void {
     if( is_array($this->fn) ){
-      [ $class, $method ] = $this->fn;
-      $response->status(200)->json(
+      [ $class, $name ] = $this->fn;
+
+      $this->getMiddlewares(
+        $class, $name 
+      )->mapper(fn(mixed $middleware): mixed => $middleware->execute($request));
+
+
+      $response->status( 200 )->json(
         call_user_func_array(
           [ 
-            new $class, $method
+            InstanceDependences::getInstance(
+              $class
+            ), $name 
           ], [ $request ]
         )
       );
-    } else {
-      if( is_callable( $this->fn )){
-        call_user_func( $this->fn, ...[ $response, $request ]);
-      }
+    } else if( is_callable( $this->fn )){
+      call_user_func( 
+        $this->fn, ...[ 
+          $response, $request
+        ]
+      );
     }
   }
 }
