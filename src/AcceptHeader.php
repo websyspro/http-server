@@ -108,17 +108,23 @@ class AcceptHeader
 
   private function ready(
   ): void {
-    while (($row = fgets($this->streamSocketAccept)) !== false) {
-      if ((bool)preg_match( "#^\s*$#", $row ) === false) {
-        $this->readyParse( $row );
+    $header = fgets( $this->streamSocketAccept);
+    if( $header ) {
+      echo "header: " . $header . "\n";
+      $this->readyParse( $header );
+
+      while (($header = fgets($this->streamSocketAccept)) !== false) {
+        if ((bool)preg_match( "#^\s*$#", $header ) === false) {
+          $this->readyParse( $header );
+        }
+
+        if ($header === "\r\n") {
+          break;
+        }
       }
 
-      if ($row === "\r\n") {
-        break;
-      }
+      $this->readyBody();
     }
-
-    $this->readyBody();
   }
 
   public function protocolVersion(

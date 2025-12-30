@@ -39,7 +39,7 @@ abstract class UtilServer
   ): void {
     @stream_set_blocking(
       $this->streamSocket,
-      true
+      false
     );
   }
 

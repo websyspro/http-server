@@ -178,7 +178,7 @@ class AcceptClient
   ): void {
     @stream_set_blocking(
       $this->streamSocketAccept,
-      true
+      false
     );    
   }
 
