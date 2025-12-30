@@ -8,6 +8,7 @@ use Exception;
 use ReflectionAttribute;
 use ReflectionClass;
 use Websyspro\Commons\Collection;
+use Websyspro\Commons\Utils;
 use Websyspro\Decorations\Server\Module;
 use Websyspro\Enums\MethodType;
 
@@ -72,7 +73,24 @@ abstract class UtilsServer
   public function decrementConnection(
   ): void {
     $this->socketConnections--;
+  }
+
+  private function createFork(
+  ): int|null  {
+    if(function_exists( "pcntl_fork")) {
+      return (int)pcntl_fork();
+    } else return null;
   } 
+
+  private function createClient(
+    HttpServer $httpServer,
+    mixed $streamSocketAccept
+  ): void {
+    new AcceptClient(
+      $httpServer, 
+      $streamSocketAccept
+    );
+  }
 
   private function startLoop(
   ) {
@@ -88,10 +106,23 @@ abstract class UtilsServer
         ];
         
         if( $streamSocketAccept ){
-          new AcceptClient(
-            $httpServer, 
-            $streamSocketAccept
-          );
+          $fork = $this->createFork();
+          
+          if(Utils::isNull( $fork )){
+            $this->createClient(
+              $httpServer, 
+              $streamSocketAccept
+            );
+          } else {
+            $this->createClient(
+              $httpServer,
+              $streamSocketAccept
+            );
+
+            if($fork === 0){
+              exit();
+            }
+          }
         }
       } catch (Exception $error) {
         throw new Exception(

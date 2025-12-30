@@ -7,6 +7,10 @@ use Websyspro\Commons\Utils;
 class AcceptHeader
 extends UtilsHeader
 {
+  private array $requestInvalids = [
+    ".well-known/appspecific/com.chrome.devtools.json"
+  ];
+
   public function getProtocolVersion(
   ): string|null {
     return $this->getHeader( "ProtocolVersion" );
@@ -78,10 +82,19 @@ extends UtilsHeader
   ): string|null {
     return $this->getHeader( "ContentBody" );
   }
+
+  private function hasBlackListeRequest(
+  ): bool {
+    return in_array($this->getRequestUrl(), $this->requestInvalids) ? false : true;
+  }
   
   public function isContent(): bool {
+    if(in_array($this->getRequestUrl(), $this->requestInvalids)){
+      return false;
+    }
+
     return Utils::sizeArray(
       $this->getPropertys()
-    ) !== 0;
+    ) !== 0 || $this->hasBlackListeRequest();
   }
 }
