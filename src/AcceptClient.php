@@ -12,7 +12,6 @@ class AcceptClient
   private AcceptHeader $acceptHeader;
   private Request $request;
   private Response $response;
-  private DetailClient $detailClient;
 
   public function __construct(
     private HttpServer $httpServer,
@@ -31,10 +30,6 @@ class AcceptClient
       $this->acceptHeader = new AcceptHeader(
         $this->streamSocketAccept
       )
-    );
-
-    $this->detailClient = new DetailClient(
-      $this->streamSocketAccept
     );
   }  
 
