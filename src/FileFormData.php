@@ -3,7 +3,7 @@
 namespace Websyspro;
 
 class FileFormData
-extends UtilFormData
+extends UtilsFormData
 {
   private string $key;
   public string $file;

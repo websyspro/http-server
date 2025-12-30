@@ -19,7 +19,7 @@ const httpRequestTest = async () => {
   try {
     const uuid = generateUUID();
     const startTime = performance.now();
-    const response = await fetch(`http://localhost:3002?uuid=${uuid}`);
+    const response = await fetch(`http://localhost:3002/api/v1/accounts/user/test/?uuid=${uuid}`);
     const endTime = performance.now();
     const responseTime = endTime - startTime;
     const { success, content } = await response.json();

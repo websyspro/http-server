@@ -2,6 +2,8 @@
 
 namespace Websyspro;
 
+use Websyspro\Commons\Utils;
+
 class AcceptHeader
 extends UtilsHeader
 {
@@ -14,9 +16,58 @@ extends UtilsHeader
     return $this->getHeader( "RequestMethod" );
   }
 
-  public function getRequestUrl(): string|null {
-    return $this->getHeader( "RequestUrl" );
+  public function getRequestUrlFull(): string|null {
+    if($this->getHeader( "RequestUrl" ) === null){
+      return null;
+    }
+
+    return preg_replace(
+      "#(^/)|(/$)#",
+      "",
+      $this->getHeader( "RequestUrl" )
+    );
   }  
+
+  public function getRequestUrl(): string|null {
+    if($this->getHeader( "RequestUrl" ) === null){
+      return null;
+    }
+
+    [ $requestUrl ] = preg_split(
+      "#\?#", $this->getHeader( "RequestUrl" )
+    );
+
+    return preg_replace(
+      "#(^/)|(/$)#",
+      "",
+      $requestUrl
+    );
+  }
+
+  private function isRequestQuery(
+  ) : bool {
+    return preg_match(
+      "#\?#", 
+      $this->getHeader( "RequestUrl" )
+    ) === 1;
+  }
+    
+  
+  public function getRequestQuery(): string|null {
+    if($this->getHeader( "RequestUrl" ) === null){
+      return null;
+    }
+
+    if($this->isRequestQuery() === false){
+      return null;
+    }
+
+    [ $_, $requestQuery ] = preg_split(
+      "#\?#", $this->getHeader( "RequestUrl" )
+    );
+
+    return $requestQuery;
+  }   
 
   public function getContentType(
   ): string|null {
@@ -26,5 +77,11 @@ extends UtilsHeader
   public function getContentBody(
   ): string|null {
     return $this->getHeader( "ContentBody" );
-  }  
+  }
+  
+  public function isContent(): bool {
+    return Utils::sizeArray(
+      $this->getPropertys()
+    ) !== 0;
+  }
 }

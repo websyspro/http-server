@@ -35,16 +35,18 @@ class AcceptClient
 
   private function readyRequestLog(
   ): void {
-    Log::message(
-      LogType::service, 
-      sprintf(
-        "[%s] %s %s",  ...[
-          $this->acceptHeader->getProtocolVersion(),
-          $this->acceptHeader->getRequestMethod(),
-          $this->acceptHeader->getRequestUrl()
-        ]
-      )
-    );
+    if($this->acceptHeader->isContent()) {
+      Log::message(
+        LogType::service, 
+        sprintf(
+          "[%s] %s %s",  ...[
+            $this->acceptHeader->getProtocolVersion(),
+            $this->acceptHeader->getRequestMethod(),
+            $this->acceptHeader->getRequestUrlFull()
+          ]
+        )
+      );
+    }
   }
 
   private function readyError(
@@ -112,28 +114,30 @@ class AcceptClient
   
   private function readyRequestSend(
   ): void {
-    $routers = $this->httpServer->getRouters()
-      ->where(fn(Router $router) => (
-        $router->isValid(
-          $this->acceptHeader->getRequestMethod(), 
-          $this->acceptHeader->getRequestUrl(),
-        )
-      ));
+    if($this->acceptHeader->isContent()){
+      $routers = $this->httpServer->getRouters()
+        ->where(fn(Router $router) => (
+          $router->isValid(
+            $this->acceptHeader->getRequestMethod(), 
+            $this->acceptHeader->getRequestUrl(),
+          )
+        ));
 
-    if( $routers->exist() === false ){
-      Error::notFound( "Controller not found" );
-    }
+      if( $routers->exist() === false ){
+        Error::notFound( "Controller not found" );
+      }
 
-    [ $router ] = $routers->all();
-    if($router instanceof Router) {
-      $router->execute(
-        $this,
-        $this->acceptHeader
-      );
-    } else {
-      $this->getResponse()->json(
-        $this->request->query
-      );
+      [ $router ] = $routers->all();
+      if($router instanceof Router) {
+        $router->execute(
+          $this,
+          $this->acceptHeader
+        );
+      } else {
+        $this->getResponse()->json(
+          $this->request->query
+        );
+      }
     }
   }
 
@@ -166,22 +170,30 @@ class AcceptClient
     fclose($this->streamSocketAccept);
   }
 
+  private function setReadyExceded(
+  ): void {
+    $this->readyRequest();
+    $this->readyRequestFail();
+    $this->readyClose();
+  }
+
+  private function setReadyToClient(
+  ): void {
+    $this->readyInc();
+    $this->readyNoBlocking();
+    $this->readyRequest();
+    $this->readyRequestLog();
+    $this->readyRequestSend();
+    $this->readyClose();
+    $this->readyDec();
+  }
+
   public function ready(
   ): void {
     try {
-      if( $this->readyIsMaxExceded()){
-        $this->readyRequest();
-        $this->readyRequestFail();
-        $this->readyClose();
-      } else {
-        $this->readyInc();
-        $this->readyNoBlocking();
-        $this->readyRequest();
-        $this->readyRequestLog();
-        $this->readyRequestSend();
-        $this->readyClose();
-        $this->readyDec();
-      }
+      $this->readyIsMaxExceded()
+        ? $this->setReadyExceded()
+        : $this->setReadyToClient();
     } catch( Exception $error ){
       $this->readyInternalError(
         $error

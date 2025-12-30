@@ -2,8 +2,6 @@
 
 namespace Websyspro;
 
-use Websyspro\Commons\Utils;
-
 abstract class UtilsHeader
 {
   private array $propertys = [];
@@ -19,15 +17,18 @@ abstract class UtilsHeader
   private function getBodySize(
   ): int {
     return (int)(
-      Utils::existVar($this->propertys["ContentLength"]) 
-        ? $this->propertys["ContentLength"] : 0
+      $this->propertys["ContentLength"] ?? 0
     );
   } 
 
   private function getPacketsReceivedSize(
   ): int {
     return $this->packetsReceived;
-  }  
+  }
+  
+  public function getPropertys(): array {
+    return $this->propertys;
+  }
 
   public function setNormalizeProperty(
     string $property

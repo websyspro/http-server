@@ -28,12 +28,13 @@ class UserController
   }
 
   #[Get("test")]
-  #[AllowAnonymous()]
   public function test(  
     #[Query()] array $query
   ): array {
-    return $query;
-  }  
+    return array_merge(
+      $query, [ "date" => date("Y-m-d H:i:s")]
+    );
+  }   
 }
 
 #[Controller("perfils")]

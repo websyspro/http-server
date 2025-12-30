@@ -3,6 +3,7 @@
 namespace Websyspro;
 
 use Websyspro\Commons\Collection;
+use Websyspro\Commons\Utils;
 
 class Request
 {
@@ -54,7 +55,18 @@ class Request
   }
 
   private function queryDecode(
-  ): void {}  
+  ): void {
+    $hasQuery = Utils::isNotNull(
+      $this->acceptHeader->getRequestQuery()
+    );
+
+    if( $hasQuery ){
+      parse_str(
+        $this->acceptHeader->getRequestQuery(), 
+        $this->query
+      );
+    }
+  }  
   
   private function setBodyFromJsonDecode(
   ): void {

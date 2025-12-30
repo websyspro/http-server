@@ -2,7 +2,7 @@
 
 namespace Websyspro;
 
-class UtilFormData
+class UtilsFormData
 {
   public function getValue(
     string $pattern,
