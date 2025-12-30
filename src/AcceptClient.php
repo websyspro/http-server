@@ -188,6 +188,17 @@ class AcceptClient
     $this->readyDec();
   }
 
+  private function setReadyException(
+    Exception $error
+  ): void {
+    $this->readyInternalError(
+      $error
+    );
+
+    $this->readyClose();
+    $this->readyDec();
+  }
+
   public function ready(
   ): void {
     try {
@@ -195,12 +206,7 @@ class AcceptClient
         ? $this->setReadyExceded()
         : $this->setReadyToClient();
     } catch( Exception $error ){
-      $this->readyInternalError(
-        $error
-      );
-
-      $this->readyClose();
-      $this->readyDec();
+      $this->setReadyException( $error );
     }   
   }
 }
