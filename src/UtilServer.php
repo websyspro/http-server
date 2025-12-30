@@ -88,10 +88,16 @@ abstract class UtilServer
 
     while($this->running){
       try {
-        new AcceptClient(
-          $this->httpServer(), 
-          $this->streamSocketAccept()
-        );
+        [ $httpServer, $streamSocketAccept ] = [
+          $this->httpServer(), $this->streamSocketAccept()
+        ];
+
+        if( $streamSocketAccept ){
+          new AcceptClient(
+            $httpServer, 
+            $streamSocketAccept
+          );
+        }
 
         $this->usLeep();
       } catch (Exception $error) {
