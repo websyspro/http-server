@@ -44,9 +44,9 @@ class PerfilController
 
   #[Post("list/products")]
   public function products(    
-    Request $request
+    #[Body()] object $object
   ): object {
-    return $request->body;
+    return $object;
   }
   
   #[Post("list/find/products")]

@@ -7,9 +7,9 @@ use Websyspro\Commons\Utils;
 abstract class AbstractParameter
 {
   public function getValue(
-    array $dataValue,
+    mixed $dataValue,
     string $instanceType,
-    string|null $key
+    string|null $key = null
   ): mixed {
     if(is_array($dataValue)){
       if(is_null($key) === false){
@@ -30,7 +30,7 @@ abstract class AbstractParameter
         $dataValue, $instanceType
       );
     }
-
+    
     return $dataValue;
   }
 }

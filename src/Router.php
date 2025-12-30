@@ -9,6 +9,12 @@ use Websyspro\Enums\MethodType;
 
 class Router
 {
+  private string $class;
+  private string $name;
+
+  private StructureController $structureController;
+  private StructureRoute $structureRoute;
+
   public function __construct(
     private MethodType $requestMethod,
     private string $requestUrl,
@@ -83,33 +89,39 @@ class Router
   }
 
   private function getMiddlewares(
-    string $class,
-    string $name
   ): Collection {
-    $structureController = new StructureController(
+    $this->structureController = new StructureController(
       new ReflectionClass(
-        $class
+        $this->class
       )
     );
 
-    $structureRoute = $structureController->endpoints->find(
+    $this->structureRoute = $this->structureController->endpoints->find(
       fn(StructureRoute $structureRoute): bool => (
-        $structureRoute->reflect->name === $name
+        $structureRoute->reflect->name === $this->name
       ) 
     );
 
-    return $structureController
+    return $this->structureController
       ->getMiddlewares()
       ->where(fn( object $middleware ): bool => (
           ($middleware instanceof Authenticate) ? (
-            $structureRoute->getMiddlewares()->where(
+            $this->structureRoute->getMiddlewares()->where(
               fn(object $middleware) => (
                 $middleware instanceof AllowAnonymous
               )
             )->exist() === false
           ) : true
         ))
-      ->merge($structureRoute->getMiddlewares());
+      ->merge($this->structureRoute->getMiddlewares());
+  }
+
+  private function getParameters(
+    Request $request
+  ): Collection {
+    return $this->structureRoute->getParameters()->mapper(fn(object $parameter): mixed => (
+      $parameter->instance->execute( $request, $parameter->instanceType )
+    ));
   }  
 
   public function execute(
@@ -117,20 +129,24 @@ class Router
     Request $request  
   ): void {
     if( is_array($this->fn) ){
-      [ $class, $name ] = $this->fn;
+      [ $this->class, $this->name 
+      ] = $this->fn;
 
-      $this->getMiddlewares(
-        $class, $name 
-      )->mapper(fn(mixed $middleware): mixed => $middleware->execute($request));
-
+      $this->getMiddlewares()->mapper(
+        fn(object $middleware): mixed => (
+          $middleware->execute(
+            $request
+          )
+        )
+      );
 
       $response->status( 200 )->json(
         call_user_func_array(
           [ 
             InstanceDependences::getInstance(
-              $class
-            ), $name 
-          ], [ $request ]
+              $this->class
+            ), $this->name 
+          ], $this->getParameters( $request )->all()
         )
       );
     } else if( is_callable( $this->fn )){
