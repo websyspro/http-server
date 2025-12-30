@@ -2,8 +2,11 @@
 
 namespace Websyspro;
 
+use Exception;
 use Websyspro\Commons\Collection;
+use Websyspro\Commons\Utils;
 use Websyspro\Enums\MethodType;
+use Websyspro\Exceptions\Error;
 use Websyspro\InstanceDI;
 use ReflectionClass;
 
@@ -122,13 +125,13 @@ class Router
     return $this->structureRoute->getParameters()->mapper(fn(object $parameter): mixed => (
       $parameter->instance->execute( $request, $parameter->instanceType )
     ));
-  }  
+  }
 
-  public function execute(
+  public function executeFromFactory(
     Response $response,
     Request $request  
   ): void {
-    if( is_array($this->fn) ){
+    try {
       [ $this->class, $this->name 
       ] = $this->fn;
 
@@ -144,15 +147,39 @@ class Router
             InstanceDI::getInstance(
               $this->class
             ), $this->name 
-          ], $this->getParameters( $request )->all()
+          ], $this->getParameters(
+            $request
+          )->all()
         )
       );
-    } else if( is_callable( $this->fn )){
-      call_user_func( 
-        $this->fn, ...[ 
-          $response, $request
-        ]
+    } catch( Exception $error ){
+      Error::internalServerError(
+        $error->getMessage()
       );
     }
+  }
+
+  private function executeFromFN(
+    Response $response,
+    Request $request
+  ): void {
+    try {
+      call_user_func( $this->fn, ...[ 
+        $response, $request
+      ]);
+    } catch( Exception $error ){
+      Error::internalServerError(
+        $error->getMessage()
+      );
+    }
+  }
+
+  public function execute(
+    Response $response,
+    Request $request  
+  ): void {
+    Utils::isArray( $this->fn )
+     ? $this->executeFromFactory( $response, $request )
+     : $this->executeFromFN( $response, $request );
   }
 }

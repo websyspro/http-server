@@ -12,17 +12,20 @@ abstract class AbstractEndpoint
   public ControllerType $controllerType = ControllerType::Endpoint;
 
   public function __construct(
-    public string $descriptor
+    public string $endpoint
   ){
-    $this->descriptor = preg_replace(
-      "#(^/)|(/$)#", "", $this->descriptor
+    $this->endpoint = preg_replace(
+      "#(^/)|(/$)#", "", $this->endpoint
     );
   }
 
   public function getEndpoints(
   ): Collection {
     return new Collection(
-      preg_split("#/#", $this->descriptor)
+      preg_split(
+        "#/#",
+        $this->endpoint
+      )
     );
   }
 

@@ -9,6 +9,18 @@ use stdClass;
 
 class Utils
 {
+  public static function isArray(
+    mixed $value
+  ): bool {
+    return \is_array($value);
+  }
+
+  public static function sizeArray(
+    array $array
+  ): int {
+    return \sizeof($array);
+  }
+
   public static function generationUuid(
   ): string {
     $guid    = random_bytes(16);

@@ -21,7 +21,7 @@ extends AbstractStructure
 
   private function startController(
   ): void {
-    $this->name = $this->attributes->first()->newInstance()->name;
+    $this->name = $this->attributes->first()->newInstance()->prefix;
   }
 
   private function startEndpoints(   

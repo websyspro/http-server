@@ -11,6 +11,6 @@ class Controller
   public ControllerType $controllerType = ControllerType::Controller;
 
   public function __construct(
-    public string $name
+    public string $prefix
   ){}
 }
