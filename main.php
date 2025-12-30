@@ -31,8 +31,10 @@ class UserController
   public function test(  
     #[Query()] array $query
   ): array {
+    $dt = DateTime::createFromFormat('U.u', microtime(true));
+    echo $dt->format('Y-m-d H:i:s.u');
     return array_merge(
-      $query, [ "date" => date("Y-m-d H:i:s")]
+      $query, [ "date" => $dt->format('Y-m-d H:i:s.u')]
     );
   }   
 }

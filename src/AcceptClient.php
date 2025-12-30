@@ -146,6 +146,11 @@ class AcceptClient
     return $this->httpServer->isMaxExceded();
   }
 
+  private function readyStart(
+  ): void {
+    Log::getNowTimer();
+  }
+
   private function readyInc(
   ): void {
     $this->httpServer->incrementConnection();
@@ -179,6 +184,7 @@ class AcceptClient
 
   private function setReadyToClient(
   ): void {
+    $this->readyStart();
     $this->readyInc();
     $this->readyNoBlocking();
     $this->readyRequest();

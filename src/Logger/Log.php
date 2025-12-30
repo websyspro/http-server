@@ -13,7 +13,7 @@ class Log
     Log::$startTimer = microtime(true);
   }
 
-  private static function getNowTimer(
+  public static function getNowTimer(
   ): int { 
     $starDiff = round(( 
       microtime(true) - Log::$startTimer
@@ -34,7 +34,8 @@ class Log
       Log::setStartTimer();
     }
   }
-  
+
+
   public static function message(
     LogType $logType,
     string $logText 
@@ -48,6 +49,8 @@ class Log
         ]
       )
     ));
+
+    Log::getNowTimer();
 
     return true;
   }
@@ -65,6 +68,8 @@ class Log
         ]
       )
     ));
+
+    Log::getNowTimer();
 
     return false;
   }
