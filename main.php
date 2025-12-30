@@ -10,7 +10,6 @@ use Websyspro\Decorations\Server\Post;
 use Websyspro\Decorations\Server\Body;
 use Websyspro\Decorations\Server\Get;
 use Websyspro\HttpServer;
-use Websyspro\Request;
 
 #[Controller("user")]
 #[Authenticate()]
