@@ -65,13 +65,13 @@ class PerfilController
 class AccountsModule {}
 
 $httpServer = new HttpServer();
+$httpServer->base( "api/v1" );
 $httpServer->factory( 
   [
     AccountsModule::class
   ]
 );
 
-$httpServer->base( "api/v1" );
 $httpServer->listen( 3002 );
 
 
