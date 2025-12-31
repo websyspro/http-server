@@ -31,11 +31,7 @@ class TestController
   public function timer(  
     #[Query()] array $query
   ): array {
-    return array_merge(
-      $query, [ "date" => DateTime::createFromFormat(
-        'U.u', microtime(true)
-      )->format( 'Y-m-d H:i:s.u' )]
-    );
+    return [];
   }
 
   #[Get("sleep")]
