@@ -92,6 +92,39 @@ abstract class UtilsServer
     );
   }
 
+  private function startLoopFromClient(
+    HttpServer $httpServer,
+    mixed $streamSocketAccept
+  ): void {
+    Log::message(
+      LogType::service,
+      "Customer received $streamSocketAccept."
+    );
+
+    $fork = $this->createFork();
+    
+    if(Utils::isNull( $fork )){
+      $this->createClient(
+        $httpServer, 
+        $streamSocketAccept
+      );
+    } else {
+      $this->createClient(
+        $httpServer,
+        $streamSocketAccept
+      );
+
+      if($fork === 0){
+        Log::message( 
+          LogType::service, 
+          "Fork $fork criado com sucesso."
+        );
+
+        exit();
+      }
+    }
+  }
+
   private function startLoop(
   ) {
     Log::message(
@@ -105,27 +138,11 @@ abstract class UtilsServer
           $this->httpServer(), $this->streamSocketAccept()
         ];
 
-        Log::message(LogType::service, "Service Loop");
-        
         if( $streamSocketAccept ){
-          $fork = $this->createFork();
-          
-          if(Utils::isNull( $fork )){
-            $this->createClient(
-              $httpServer, 
-              $streamSocketAccept
-            );
-          } else {
-            $this->createClient(
-              $httpServer,
-              $streamSocketAccept
-            );
-
-            if($fork === 0){
-              Log::message(LogType::service, "Fork $fork criado com sucesso.");
-              exit();
-            }
-          }
+          $this->startLoopFromClient(
+            $httpServer,
+            $streamSocketAccept
+          );
         }
       } catch (Exception $error) {
         throw new Exception(

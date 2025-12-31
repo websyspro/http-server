@@ -188,8 +188,8 @@ class AcceptClient
     $this->readyInc();
     $this->readyNoBlocking();
     $this->readyRequest();
-    $this->readyRequestLog();
     $this->readyRequestSend();
+    $this->readyRequestLog();
     $this->readyClose();
     $this->readyDec();
   }

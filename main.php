@@ -12,9 +12,9 @@ use Websyspro\Decorations\Server\Get;
 use Websyspro\Decorations\Server\Query;
 use Websyspro\HttpServer;
 
-#[Controller("user")]
+#[Controller("test")]
 #[Authenticate()]
-class UserController
+class TestController
 {
   public function __construct(
   ){}
@@ -27,60 +27,37 @@ class UserController
     return [];
   }
 
-  #[Get("test")]
-  public function test(  
+  #[Get("timer")]
+  public function timer(  
     #[Query()] array $query
   ): array {
-    $dt = DateTime::createFromFormat('U.u', microtime(true));
     return array_merge(
-      $query, [ "date" => $dt->format('Y-m-d H:i:s.u')]
+      $query, [ "date" => DateTime::createFromFormat(
+        'U.u', microtime(true)
+      )->format( 'Y-m-d H:i:s.u' )]
     );
-  }   
-}
+  }
 
-#[Controller("perfils")]
-#[Authenticate()]
-#[FileValidade()]
-class PerfilController
-{
-  public function __construct(
-  ){}
-
-  #[Get("list/get/{productId:int}")]
-  public function all(
-    #[Param("productId")] int $productId
+  #[Get("sleep")]
+  public function sleep(  
   ): int {
-    return $productId;
-  }
-
-  #[Post("list/products")]
-  public function products(    
-    #[Body()] object $object
-  ): object {
-    sleep(20);
-    return $object;
-  }
-  
-  #[Get("list/find/products")]
-  public function findProduct(
-  ): array {
-    return ["teste"];
-  }
+    return sleep( 25 );
+  }  
 }
+
 
 #[Module(
   controllers: [
-    UserController::class,
-    PerfilController::class
+    TestController::class,
   ]
 )]
-class AccountsModule {}
+class BaseModule {}
 
 $httpServer = new HttpServer();
 $httpServer->base( "api/v1" );
 $httpServer->factory( 
   [
-    AccountsModule::class
+    BaseModule::class
   ]
 );
 
