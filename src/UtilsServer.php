@@ -98,8 +98,7 @@ abstract class UtilsServer
   ): void {
     $clientInfo = stream_socket_get_name($streamSocketAccept, true);
     
-    // Verificar se há dados para ler antes de fazer fork
-    $read = [$streamSocketAccept];
+    $read = [ $streamSocketAccept ];
     $write = $except = [];
     
     if(stream_select($read, $write, $except, 0, 100000) <= 0) {
@@ -117,23 +116,12 @@ abstract class UtilsServer
       );
     } else {
       if($fork === 0){
-        $pid = getmypid();
-        Log::message(
-          LogType::service,
-          "Fork child PID: $pid - Client: $clientInfo"
-        );
-        
         $this->createClient(
           $httpServer,
           $streamSocketAccept
         );
         
         exit(0);
-      } else {
-        Log::message(
-          LogType::service,
-          "Fork parent continues, child PID: $fork - Client: $clientInfo"
-        );
       }
     }
   }

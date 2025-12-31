@@ -41,7 +41,7 @@ class TestController
   #[Get("sleep")]
   public function sleep(  
   ): int {
-    return sleep( seconds: 30 );
+    return 1;
   }  
 }
 
