@@ -6,7 +6,7 @@ const generateUUID = () => {
   });
 };
 
-const numberTest = 10000;
+const numberTest = 1;
 const resultTest = {
   success: 0,
   fail: 0,
@@ -19,7 +19,7 @@ const httpRequestTest = async () => {
   try {
     const uuid = generateUUID();
     const startTime = performance.now();
-    const response = await fetch(`http://localhost:3002/api/v1/accounts/user/test/?uuid=${uuid}`);
+    const response = await fetch(`http://localhost:3002/api/v1/base/test/timer?uuid=${uuid}`);
     const endTime = performance.now();
     const responseTime = endTime - startTime;
     const { success, content } = await response.json();
@@ -41,9 +41,19 @@ const httpRequestTest = async () => {
 const runTests = async () => {
   const testStartTime = performance.now();
   
+  // Criar todas as promises simultaneamente
+  const promises = [];
   for (let i = 0; i < numberTest; i++) {
-    const result = await httpRequestTest();
-    
+    promises.push(httpRequestTest());
+  }
+  
+  console.log(`Executando ${numberTest} requests simultâneos...`);
+  
+  // Executar todas em paralelo
+  const results = await Promise.all(promises);
+  
+  // Processar resultados
+  results.forEach(result => {
     if (result.success) {
       resultTest.success++;
       resultTest.totalTime += result.time;
@@ -52,21 +62,15 @@ const runTests = async () => {
     } else {
       resultTest.fail++;
     }
-    
-    console.clear();
-    console.log(`Realizando teste: [${i + 1}/${numberTest}]`);
-    
-    // Pequeno delay para não sobrecarregar
-    await new Promise(resolve => setTimeout(resolve, 10));
-  }
+  });
   
   const testEndTime = performance.now();
-  const totalTestTime = (testEndTime - testStartTime) / 1000; // em segundos
+  const totalTestTime = (testEndTime - testStartTime) / 1000;
   const avgResponseTime = resultTest.success > 0 ? resultTest.totalTime / resultTest.success : 0;
   const requestsPerSecond = numberTest / totalTestTime;
   
   console.clear();
-  console.log('=== RESUMO DOS TESTES ===');
+  console.log('=== RESUMO DOS TESTES (PARALELO) ===');
   console.log(`Total de requisições: ${numberTest}`);
   console.log(`Sucessos: ${resultTest.success}`);
   console.log(`Falhas: ${resultTest.fail}`);
@@ -75,7 +79,7 @@ const runTests = async () => {
   console.log(`Tempo médio de resposta: ${avgResponseTime.toFixed(2)}ms`);
   console.log(`Tempo mínimo: ${resultTest.minTime.toFixed(2)}ms`);
   console.log(`Tempo máximo: ${resultTest.maxTime.toFixed(2)}ms`);
-  console.log('========================');
+  console.log('====================================');
 };
 
 runTests();

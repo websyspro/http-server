@@ -96,11 +96,18 @@ abstract class UtilsServer
     HttpServer $httpServer,
     mixed $streamSocketAccept
   ): void {
-    Log::message(
-      LogType::service,
-      "Customer received $streamSocketAccept."
-    );
-
+    $clientInfo = stream_socket_get_name($streamSocketAccept, true);
+    
+    // Verificar se há dados para ler antes de fazer fork
+    $read = [$streamSocketAccept];
+    $write = $except = [];
+    
+    if(stream_select($read, $write, $except, 0, 100000) <= 0) {
+      // Conexão sem dados - fechar imediatamente
+      fclose($streamSocketAccept);
+      return;
+    }
+    
     $fork = $this->createFork();
     
     if(Utils::isNull( $fork )){
@@ -109,18 +116,24 @@ abstract class UtilsServer
         $streamSocketAccept
       );
     } else {
-      $this->createClient(
-        $httpServer,
-        $streamSocketAccept
-      );
-
       if($fork === 0){
-        Log::message( 
-          LogType::service, 
-          "Fork $fork criado com sucesso."
+        $pid = getmypid();
+        Log::message(
+          LogType::service,
+          "Fork child PID: $pid - Client: $clientInfo"
         );
-
-        exit();
+        
+        $this->createClient(
+          $httpServer,
+          $streamSocketAccept
+        );
+        
+        exit(0);
+      } else {
+        Log::message(
+          LogType::service,
+          "Fork parent continues, child PID: $fork - Client: $clientInfo"
+        );
       }
     }
   }
@@ -180,15 +193,29 @@ abstract class UtilsServer
 
   private function startShutdown(
   ): void {
-    if( function_exists( "pcntl_async_signals" )){
-      if( function_exists( "pcntl_signal" )){
-        if( defined( "SIGTERM" ) && defined( "SIGINT" )){
-          pcntl_async_signals(true);
+    if(!function_exists('pcntl_async_signals') || 
+       !function_exists('pcntl_signal') ||
+       !function_exists('pcntl_waitpid')) {
+      return;
+    }
 
-          pcntl_signal(SIGTERM, fn() => $this->shutdown());
-          pcntl_signal(SIGINT, fn() => $this->shutdown());
+    pcntl_async_signals(true);
+
+    if(defined('SIGTERM')) {
+      pcntl_signal(SIGTERM, fn() => $this->shutdown());
+    }
+    
+    if(defined('SIGINT')) {
+      pcntl_signal(SIGINT, fn() => $this->shutdown());
+    }
+    
+    if(defined('SIGCHLD') && defined('WNOHANG')) {
+      pcntl_signal(SIGCHLD, function() {
+        $status = 0;
+        while(($pid = pcntl_waitpid(-1, $status, WNOHANG)) > 0) {
+          // Processo filho finalizado
         }
-      }
+      });
     }
   }
 
