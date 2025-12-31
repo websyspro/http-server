@@ -1,16 +1,16 @@
 <?php
 
 use Websyspro\Decorations\Server\AllowAnonymous;
-use Websyspro\Decorations\Server\FileValidade;
 use Websyspro\Decorations\Server\Authenticate;
 use Websyspro\Decorations\Server\Controller;
 use Websyspro\Decorations\Server\Module;
-use Websyspro\Decorations\Server\Param;
 use Websyspro\Decorations\Server\Post;
 use Websyspro\Decorations\Server\Body;
 use Websyspro\Decorations\Server\Get;
 use Websyspro\Decorations\Server\Query;
 use Websyspro\HttpServer;
+use Websyspro\Request;
+use Websyspro\Response;
 
 #[Controller("test")]
 #[Authenticate()]

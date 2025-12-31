@@ -4,8 +4,7 @@ namespace Websyspro;
 
 use Websyspro\Enums\MethodType;
 
-class HttpServer 
-extends UtilsServer
+final class HttpServer extends UtilsServer
 {
   public function get(
     string $path,
@@ -39,7 +38,10 @@ extends UtilsServer
     string $path,
     callable|null $fn = null
   ) : void {
-    $this->addEndPoint( MethodType::DELETE, $path, $fn );
+    $this->addEndPoint( 
+      MethodType::DELETE, 
+      $path, $fn 
+    );
   }
 
   public function head(

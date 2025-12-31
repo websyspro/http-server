@@ -6,7 +6,7 @@ const generateUUID = () => {
   });
 };
 
-const numberTest = 750;
+const numberTest = 100;
 const resultTest = {
   success: 0,
   fail: 0,

@@ -96,7 +96,9 @@ abstract class UtilsServer
     HttpServer $httpServer,
     mixed $streamSocketAccept
   ): void {
-    $clientInfo = stream_socket_get_name($streamSocketAccept, true);
+    $clientInfo = stream_socket_get_name(
+      $streamSocketAccept, true
+    );
     
     $read = [ $streamSocketAccept ];
     $write = $except = [];
@@ -236,6 +238,10 @@ abstract class UtilsServer
 
   public function getModules(
   ): Collection {
+    if(isset($this->modules) === false){
+      return new Collection( []);
+    }
+
     return new Collection(
       $this->modules
     );
