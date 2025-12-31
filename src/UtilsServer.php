@@ -92,6 +92,20 @@ abstract class UtilsServer
     );
   }
 
+  private function isStreamSelect(
+    array $read = [],
+    array $write = [],
+    array $except = []
+  ): int|bool {
+    return stream_select(
+      $read,
+      $write,
+      $except,
+      0, 
+      100000
+    ) <= 0;
+  }
+
   private function startLoopFromClient(
     HttpServer $httpServer,
     mixed $streamSocketAccept
@@ -102,10 +116,14 @@ abstract class UtilsServer
     
     $read = [ $streamSocketAccept ];
     $write = $except = [];
+
+    $isStreamSelect = $this->isStreamSelect(
+      $read, $write, $except
+    );
     
-    if(stream_select($read, $write, $except, 0, 100000) <= 0) {
-      // Conexão sem dados - fechar imediatamente
-      fclose($streamSocketAccept);
+    if( $isStreamSelect === true ){
+      fflush( $streamSocketAccept );
+      fclose( $streamSocketAccept );
       return;
     }
     
@@ -117,7 +135,7 @@ abstract class UtilsServer
         $streamSocketAccept
       );
     } else {
-      if($fork === 0){
+      if( $fork === 0 ){
         $this->createClient(
           $httpServer,
           $streamSocketAccept

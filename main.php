@@ -9,8 +9,6 @@ use Websyspro\Decorations\Server\Body;
 use Websyspro\Decorations\Server\Get;
 use Websyspro\Decorations\Server\Query;
 use Websyspro\HttpServer;
-use Websyspro\Request;
-use Websyspro\Response;
 
 #[Controller("test")]
 #[Authenticate()]
@@ -31,7 +29,7 @@ class TestController
   public function timer(  
     #[Query()] array $query
   ): array {
-    return [];
+    return [ "Hello word!!!" ];
   }
 
   #[Get("sleep")]
@@ -43,7 +41,7 @@ class TestController
 
 
 #[Module(
-  controllers: [
+  [
     TestController::class,
   ]
 )]

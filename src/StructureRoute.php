@@ -28,7 +28,7 @@ extends AbstractStructure
 
     if($methodAttributes->exist()){
       $this->methodType = $methodAttributes->first()->getMethodType();
-      $this->endpoints = $methodAttributes->first()->getRoute();
+      $this->endpoints = $methodAttributes->first()->getUrl();
     }
   }
 
